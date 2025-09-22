@@ -57,7 +57,7 @@ Route::post('/items', [ItemController::class, 'store'])->middleware('auth:sanctu
 Route::get('/items/{id}', [ItemController::class, 'show'])->middleware('auth:sanctum');
 
 // Route untuk "Update" item berdasarkan ID
-Route::put('/items/{item}', [ItemController::class, 'update'])->middleware('auth:sanctum');
+Route::put('/items/{id}', [ItemController::class, 'update'])->middleware('auth:sanctum');
 Route::patch('/items/{item}', [ItemController::class, 'update'])->middleware('auth:sanctum');
 
 

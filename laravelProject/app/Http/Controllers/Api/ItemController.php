@@ -39,14 +39,16 @@ class ItemController extends Controller
      */
     public function show(Item $id)
     {
-        return response()-> json($id, Response::HTTP_OK);
+            $item = Item::find($id);
+        return response()-> json($item, Response::HTTP_OK);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Item $item)
+    public function update(Request $request, $id)
     {
+        $item = Item::find($id);
         $validatedData = $request->validate([
             'kode_item' => 'nullable|string|max:15|unique:items,kode_item,' . $item->id,
             'nama_item' => 'nullable|string|max:100',
