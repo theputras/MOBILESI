@@ -38,7 +38,6 @@ class LoginController extends Controller
         return response()->json([
             'message' => 'User registered successfully',
             'token' => $token,
-            'token_type' => 'Bearer',
         ]);
     }
     
