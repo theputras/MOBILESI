@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
-use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -60,27 +59,12 @@ class LoginController extends Controller
         ]);
     }
     
-
-
 public function logout(Request $request)
 {
-    /** @var \App\Models\User|null $user */
-    $user = Auth::guard('sanctum')->user();
+    $request->user()->tokens()->delete();
 
-    if (! $user) {
-        return response()->json(['message' => 'Not authenticated'], 401);
-    }
-
-    /** @var PersonalAccessToken|null $token */
-    $token = $user->currentAccessToken();
-    $token?->delete();
-
-    return response()->json(['message' => 'Logged out successfully'], 200);
+    return response()->json(['message' => 'Successfully logged out']);
 }
-
-
-
-
     
     
     

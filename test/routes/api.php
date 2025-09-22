@@ -1,6 +1,6 @@
 <?php
 use App\Http\Controllers\Api\ItemController;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Api\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KonsumenController;
@@ -80,9 +80,20 @@ Route::patch('/konsumens/{konsumen}', [KonsumenController::class, 'update'])->mi
 // Route untuk "Delete" konsumen berdasarkan ID
 Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy'])->middleware('auth:sanctum');
 
+// Route untuk "Registrasi"
 Route::post('/register', [LoginController::class, 'register']);
-Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1');
-Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:sanctum');
+
+// Route untuk "Login"
+Route::post('/login', [LoginController::class, 'login']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout']);
+    // Define your protected API routes here
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+});
 
 // Opsional
 // Route::post('/logout-all', [LoginController::class, 'logoutAll'])->middleware('auth:sanctum');
