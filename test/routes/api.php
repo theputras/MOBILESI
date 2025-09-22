@@ -88,8 +88,10 @@ Route::post('/login', [LoginController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    
+    // Route ini hanya bisa diakses jika user sudah login (mengirim token)
     Route::post('/logout', [LoginController::class, 'logout']);
-    // Define your protected API routes here
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
