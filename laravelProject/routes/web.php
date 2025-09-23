@@ -6,4 +6,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/kal', function () {
+    return view('calender');
+});
+
 

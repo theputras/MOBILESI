@@ -68,6 +68,7 @@ Route::delete('/items/{item}', [ItemController::class, 'destroy'])->middleware('
 Route::get('/konsumens', [KonsumenController::class, 'index'])->middleware('auth:sanctum');
 
 // Route untuk "Insert" konsumen baru
+
 Route::post('/konsumens', [KonsumenController::class, 'store'])->middleware('auth:sanctum');
 
 // Route untuk "Read" konsumen berdasarkan ID
