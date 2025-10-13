@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">172.16.42.50</domain> <!-- IP server yang diperbolehkan -->
+    </domain-config>
+</network-security-config>
