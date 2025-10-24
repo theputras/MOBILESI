@@ -75,4 +75,5 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             textViewHargaJual = itemView.findViewById(R.id.textViewHargaJual);
         }
     }
+
 }

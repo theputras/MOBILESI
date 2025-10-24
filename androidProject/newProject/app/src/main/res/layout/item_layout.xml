@@ -42,14 +42,14 @@
             android:id="@+id/textViewHargaBeli"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Harga Beli: Rp 5000"
+            android:text="Harga Beli: Rp xxxxxx"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/textViewHargaJual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Harga Jual: Rp 7500"
+            android:text="Harga Jual: Rp xxxxxx"
             android:textSize="14sp"
             android:textStyle="italic" />
 

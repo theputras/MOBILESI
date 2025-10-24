@@ -66,7 +66,12 @@ public function logout(Request $request)
 }
     
     
-    
+        public function logoutAll(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->json(['message' => 'Successfully logged out from all devices']);
+    }
 
    
 }
