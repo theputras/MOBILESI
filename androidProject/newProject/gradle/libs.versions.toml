@@ -10,6 +10,7 @@ constraintlayout = "2.2.1"
 retrofit = "2.9.0"
 cardview = "1.0.0"
 recyclerview = "1.3.1"
+swiperefreshlayout = "1.1.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -27,6 +28,7 @@ converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ve
 # UI Components
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

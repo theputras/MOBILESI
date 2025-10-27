@@ -40,9 +40,11 @@ class KonsumenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Konsumen $konsumen)
+    
+        public function show(Konsumen $id)
     {
-        return response()->json($konsumen, Response::HTTP_OK);
+            $konsumen = Konsumen::find($id);
+        return response()-> json($konsumen, Response::HTTP_OK);
     }
 
     /**

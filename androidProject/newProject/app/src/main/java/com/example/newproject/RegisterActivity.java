@@ -31,34 +31,8 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnRegister = findViewById(R.id.btnRegister);
-        btnShowPassword = findViewById(R.id.btnShowPassword);
-        btnShowConfirmPassword = findViewById(R.id.btnShowConfirmPassword);
 
-        // Toggle show/hide password
-        btnShowPassword.setOnClickListener(v -> {
-            isPasswordVisible = !isPasswordVisible;
-            if (isPasswordVisible) {
-                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                btnShowPassword.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-            } else {
-                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                btnShowPassword.setImageResource(android.R.drawable.ic_menu_view);
-            }
-            etPassword.setSelection(etPassword.length());
-        });
 
-        // Toggle show/hide confirm password
-        btnShowConfirmPassword.setOnClickListener(v -> {
-            isConfirmPasswordVisible = !isConfirmPasswordVisible;
-            if (isConfirmPasswordVisible) {
-                etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                btnShowConfirmPassword.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
-            } else {
-                etConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                btnShowConfirmPassword.setImageResource(android.R.drawable.ic_menu_view);
-            }
-            etConfirmPassword.setSelection(etConfirmPassword.length());
-        });
 
         btnRegister.setOnClickListener(v -> doRegister());
     }

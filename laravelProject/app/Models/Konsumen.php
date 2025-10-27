@@ -16,5 +16,6 @@ class Konsumen extends Model
         'telp',
         'alamat',
         'perusahaan',
+        'keterangan'
     ];
 }

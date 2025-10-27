@@ -17,11 +17,13 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/textViewNama"
+        android:id="@+id/textViewNamaKonsumen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nama Item"
+        android:text="Nama Konsumen"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="?attr/colorPrimary" /> </LinearLayout>
+        android:textColor="?attr/colorPrimary" />
+
+</LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -1,14 +1,14 @@
-package com.example.newproject;
+package com.example.newproject.models;
 
 public class Item {
     private int id;
     private String kode_item;
     private String nama_item;
     private String satuan;
-    private int hargabeli;
-    private int hargajual;
+    private long hargabeli;
+    private long hargajual;
 
-    public Item(int id, String kode_item, String nama_item, String satuan, int hargabeli, int hargajual) {
+    public Item(int id, String kode_item, String nama_item, String satuan, long hargabeli, long hargajual) {
         this.id = id;
         this.kode_item = kode_item;
         this.nama_item = nama_item;
@@ -18,7 +18,7 @@ public class Item {
     }
 
     // Constructor tambahan buat request (tanpa ID)
-    public Item(String kode_item, String nama_item, String satuan, int hargabeli, int hargajual) {
+    public Item(String kode_item, String nama_item, String satuan, long hargabeli, long hargajual) {
         this.kode_item = kode_item;
         this.nama_item = nama_item;
         this.satuan = satuan;
@@ -39,9 +39,9 @@ public class Item {
     public String getSatuan() { return satuan; }
     public void setSatuan(String satuan) { this.satuan = satuan; }
 
-    public int getHargabeli() { return hargabeli; }
-    public void setHargabeli(int hargabeli) { this.hargabeli = hargabeli; }
+    public long getHargabeli() { return hargabeli; }
+    public void setHargabeli(long hargabeli) { this.hargabeli = hargabeli; }
 
-    public int getHargajual() { return hargajual; }
-    public void setHargajual(int hargajual) { this.hargajual = hargajual; }
+    public long getHargajual() { return hargajual; }
+    public void setHargajual(long hargajual) { this.hargajual = hargajual; }
 }

@@ -27,8 +27,9 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".AccountActivity" />
         <activity
-            android:name=".AddItemActivity"
+            android:name=".DetailActivity"
             android:label="Tambah Item" />
     </application>
 
