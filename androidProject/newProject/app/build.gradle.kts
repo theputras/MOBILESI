@@ -57,9 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.3")
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
-    implementation("com.google.firebase:firebase-analytics:21.4.0")+
-            
-
+    implementation("com.google.firebase:firebase-analytics:21.4.0")
 
 
 }
