@@ -1,0 +1,26 @@
+Isi field-field seperti ini:
+
+Field 1
+• Name: name
+• Type: string
+• Value: misal "Bahlil"
+
+Field 2
+• Name: desc
+• Type: string
+• Value: "Data pertama"
+
+Klik Save.
+
+Tambah beberapa document lagi
+Gunakan tombol “Add document”.
+
+Contoh:
+
+Document 2:
+name → “Erlangga”
+desc → “Data kedua”
+
+Document 3:
+name → “Pisang Goreng”
+desc → “Data makanan”
