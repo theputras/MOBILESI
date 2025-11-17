@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "780717160456",
+    "project_id": "theputrasapps",
+    "storage_bucket": "theputrasapps.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780717160456:android:3290980ce0e172aec739bd",
+        "android_client_info": {
+          "package_name": "com.example.newproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsWXwrJJXOGAueWDOt7fEntmHbxHJ9lsY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

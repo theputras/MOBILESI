@@ -14,6 +14,9 @@ import android.util.Log; // Untuk logging error cache
 import android.webkit.CookieManager; // Untuk hapus cookie WebView
 
 import java.io.File; // Untuk hapus cache
+import java.util.HashMap;
+import java.util.Map;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -26,6 +29,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout; // Import TabLayout
 import com.google.android.material.tabs.TabLayoutMediator; // Import TabLayoutMediator
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private BottomNavigationView bottomNavigationView;
-
+    DatabaseReference db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FirebaseApp.initializeApp(this);
+        db = FirebaseDatabase.getInstance().getReference();
         // Inisialisasi Toolbar
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 1:
                     tab.setText("Konsumen");
+
+                case 2:
+                    tab.setText("DataFire");
                     break;
             }
         }).attach();
@@ -158,6 +171,53 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+//    Contoh kirim data sederhana:
+    private void writeData() {
+        db.child("users").child("user1").setValue("Hello world")
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Data berhasil ditulis", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Gagal: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+//    Contoh kirim objek:
+    private void writeUserObject() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", "Budi");
+        user.put("age", 20);
+
+        db.child("users").child("user2").setValue(user);
+    }
+    // Contoh Membaca Data Sekali (single read)
+    private void readData() {
+        db.child("users").child("user1").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Object value = task.getResult().getValue();
+                Toast.makeText(this, "Value: " + value, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Gagal membaca", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+//Contoh Mendengar Update Secara Live
+    private void listenChanges() {
+        db.child("users").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String value = child.getValue(String.class);
+                    Log.d("FIREBASE", "Data: " + value);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("FIREBASE", "Error: " + error.getMessage());
+            }
+        });
+    }
+
 
 
     // Hapus: onResume() yang memanggil getItemsFromServer()

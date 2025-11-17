@@ -20,6 +20,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
                 return new ItemListFragment(); // Posisi 0 untuk Item
             case 1:
                 return new KonsumenListFragment(); // Posisi 1 untuk Konsumen
+            case 2:
+                return new FireListFragment();   // TAB BARU
             default:
                 return new ItemListFragment(); // Default
         }
@@ -27,6 +29,6 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2; // Jumlah tab kita ada 2 (Item dan Konsumen)
+        return 3; // Jumlah tab kita ada 2 (Item dan Konsumen)
     }
 }
