@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.newproject"
+    namespace = "com.theputras.firebaseapps"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.newproject"
+        applicationId = "com.theputras.firebaseapps"
         minSdk = 30
         targetSdk = 35
         versionCode = 1
@@ -34,6 +33,14 @@ android {
 
 dependencies {
 
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.activity:activity:1.9.2")
@@ -57,12 +64,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.3")
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
-    implementation("com.google.firebase:firebase-analytics:21.4.0")+
-            
-
-
+    implementation("com.google.firebase:firebase-analytics:21.4.0")
 
 }
-
-
-
