@@ -31,13 +31,14 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new FireAdapter(list);
         fireRecycler.setAdapter(adapter);
-
+        // Inisialisasi Firestore
         db = FirebaseFirestore.getInstance();
-
+        // Panggil fungsi untuk mengambil data dari Firestore secara real-time
         loadFirestoreRealtime();
     }
-
+// Fungsi untuk mengambil data dari Firestore secara real-time
     private void loadFirestoreRealtime() {
+        // Mengambil data dari Firestore
         db.collection("fireData")
                 .addSnapshotListener((value, error) -> {
 
