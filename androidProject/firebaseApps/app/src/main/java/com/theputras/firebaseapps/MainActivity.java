@@ -1,30 +1,55 @@
 package com.theputras.firebaseapps;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.theputras.firebaseapps.adapter.FireAdapter;
+import com.theputras.firebaseapps.models.FireModel;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    DatabaseReference db;
+
+    RecyclerView fireRecycler;
+    FireAdapter adapter;
+    ArrayList<FireModel> list = new ArrayList<>();
+
+    FirebaseFirestore db;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        FirebaseApp.initializeApp(this);
-        db = FirebaseDatabase.getInstance().getReference();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        fireRecycler = findViewById(R.id.fireRecycler);
+        fireRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        adapter = new FireAdapter(list);
+        fireRecycler.setAdapter(adapter);
+
+        db = FirebaseFirestore.getInstance();
+
+        loadFirestoreRealtime();
+    }
+
+    private void loadFirestoreRealtime() {
+        db.collection("fireData")
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null || value == null) return;
+
+                    list.clear();
+                    for (DocumentSnapshot doc : value.getDocuments()) {
+                        FireModel model = doc.toObject(FireModel.class);
+                        if (model != null) list.add(model);
+                    }
+
+                    adapter.notifyDataSetChanged();
+                });
     }
 }

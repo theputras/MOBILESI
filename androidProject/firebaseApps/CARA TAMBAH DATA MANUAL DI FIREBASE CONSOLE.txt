@@ -1,0 +1,67 @@
+🔥 CARA INPUT DATA DI FIRESTORE (DARI FIREBASE CONSOLE)
+
+Ikuti persis ini:
+
+Masuk Firebase Console
+https://console.firebase.google.com/
+
+Buka project aplikasi lu
+Pilih yang lu pakai untuk Android project.
+
+Masuk menu:
+Build → Firestore Database
+
+Klik tab Data
+
+Kalau Firestore belum dibuat → klik “Create Database”.
+
+Klik Start collection
+
+Isi:
+
+Collection ID:
+fireData
+(persis sama dengan kode fragment lu)
+
+Tambah 1 document
+
+Document ID:
+Klik “Auto-ID”
+
+Isi field-field seperti ini:
+
+Field 1
+• Name: name
+• Type: string
+• Value: misal "Bahlil"
+
+Field 2
+• Name: desc
+• Type: string
+• Value: "Data pertama"
+
+Klik Save.
+
+Tambah beberapa document lagi
+Gunakan tombol “Add document”.
+
+Contoh:
+
+Document 2:
+name → “Erlangga”
+desc → “Data kedua”
+
+Document 3:
+name → “Pisang Goreng”
+desc → “Data makanan”
+
+🔥 Struktur akhirnya harus begini:
+
+fireData
+├── Wxyz123
+│ ├── name: "Bahlil"
+│ └── desc: "Data pertama"
+├── Abc9999
+│ ├── name: "Erlangga"
+│ └── desc: "Data kedua"
+└── …… seterusnya
