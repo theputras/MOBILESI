@@ -15,42 +15,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView fireRecycler;
-    FireAdapter adapter;
-    ArrayList<FireModel> list = new ArrayList<>();
-
-    FirebaseFirestore db;
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        fireRecycler = findViewById(R.id.fireRecycler);
-        fireRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        adapter = new FireAdapter(list);
-        fireRecycler.setAdapter(adapter);
-        // Inisialisasi Firestore
-        db = FirebaseFirestore.getInstance();
-        // Panggil fungsi untuk mengambil data dari Firestore secara real-time
-        loadFirestoreRealtime();
-    }
-// Fungsi untuk mengambil data dari Firestore secara real-time
-    private void loadFirestoreRealtime() {
-        // Mengambil data dari Firestore
-        db.collection("fireData")
-                .addSnapshotListener((value, error) -> {
-
-                    if (error != null || value == null) return;
-
-                    list.clear();
-                    for (DocumentSnapshot doc : value.getDocuments()) {
-                        FireModel model = doc.toObject(FireModel.class);
-                        if (model != null) list.add(model);
-                    }
-
-                    adapter.notifyDataSetChanged();
-                });
     }
 }

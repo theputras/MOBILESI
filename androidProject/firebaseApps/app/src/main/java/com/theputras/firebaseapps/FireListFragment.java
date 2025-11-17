@@ -40,7 +40,7 @@ public class FireListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new FireAdapter(list);
         recyclerView.setAdapter(adapter);
-
+        // Inisialisasi Firestore
         db = FirebaseFirestore.getInstance();
 
         loadFirestoreRealtime();
@@ -49,10 +49,10 @@ public class FireListFragment extends Fragment {
 
         return view;
     }
-
+    // Fungsi untuk memuat data dari Firestore secara realtime
     private void loadFirestoreRealtime() {
         progressBar.setVisibility(View.VISIBLE);
-
+        // Mengambil data dari koleksi "fireData"
         db.collection("fireData")
                 .addSnapshotListener((value, error) -> {
                     if (error != null || value == null) {
