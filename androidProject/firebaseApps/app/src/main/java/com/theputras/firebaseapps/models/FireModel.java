@@ -1,27 +1,72 @@
 package com.theputras.firebaseapps.models;
 
-import com.google.firebase.firestore.Exclude; // Pastikan import ini ada
-
 public class FireModel {
-    private String id; // Tambahan field ID
-    private String name;
-    private String desc;
+    private String id;
+    private String prodi; // Pengganti 'Mahasiswa'
+    private String nama;
+    private String nim;
+    private String ttl;
+    private String umur;
 
-    public FireModel() { }
-
-    public FireModel(String name, String desc) {
-        this.name = name;
-        this.desc = desc;
+    // Constructor Kosong (Wajib untuk Firestore)
+    public FireModel() {
     }
 
-    // Tambahkan Getter & Setter untuk ID dengan @Exclude
-    @Exclude
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // Constructor Lengkap
+    public FireModel(String id, String prodi, String nama, String nim, String ttl, String umur) {
+        this.id = id;
+        this.prodi = prodi;
+        this.nama = nama;
+        this.nim = nim;
+        this.ttl = ttl;
+        this.umur = umur;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getId() {
+        return id;
+    }
 
-    public String getDesc() { return desc; }
-    public void setDesc(String desc) { this.desc = desc; }
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getProdi() {
+        return prodi;
+    }
+
+    public void setProdi(String prodi) {
+        this.prodi = prodi;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public void setNama(String nama) {
+        this.nama = nama;
+    }
+
+    public String getNim() {
+        return nim;
+    }
+
+    public void setNim(String nim) {
+        this.nim = nim;
+    }
+
+    public String getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(String ttl) {
+        this.ttl = ttl;
+    }
+
+    public String getUmur() {
+        return umur;
+    }
+
+    public void setUmur(String umur) {
+        this.umur = umur;
+    }
 }
