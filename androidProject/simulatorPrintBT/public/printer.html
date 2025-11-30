@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Printer Simulator</title>
+    <style>
+        body {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+        }
+        
+        #thermal-paper {
+            width: 300px;
+            min-height: 400px;
+            margin-bottom: 100px; /* Space lebih lebar buat tombol */
+            background-color: #fff;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            position: relative;
+            transition: height 0.3s;
+        }
+
+        .line {
+            font-size: 14px;
+            line-height: 1.2;
+            color: #000;
+            margin-bottom: 2px;
+            text-transform: uppercase; 
+            word-wrap: break-word;
+        }
+
+        .printing-animation {
+            animation: fadeIn 0.1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status {
+            font-size: 10px;
+            color: #888;
+            border-bottom: 1px dashed #000;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status span.connected { color: green; font-weight: bold; }
+        .status span.disconnected { color: red; font-weight: bold; }
+
+        /* --- BUTTONS CONTAINER --- */
+        .btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+            z-index: 100;
+        }
+
+        /* TOMBOL UMUM */
+        .float-btn {
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .float-btn:active { transform: scale(0.95); }
+
+        /* WARNA TOMBOL */
+        #clear-btn { background-color: #d9534f; } /* Merah */
+        #clear-btn:hover { background-color: #c9302c; }
+
+        #disconnect-btn { background-color: #f0ad4e; } /* Oranye */
+        #disconnect-btn:hover { background-color: #ec971f; }
+        
+        /* Tombol disable kalau belum connect */
+        #disconnect-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="thermal-paper">
+        <div class="status">
+            <span>BLUETOOTH SIMULATOR</span>
+            <span id="connection-status" class="disconnected">● OFFLINE</span>
+        </div>
+        <div id="output"></div>
+    </div>
+
+    <div class="btn-container">
+        <button id="disconnect-btn" class="float-btn" onclick="disconnectDevice()" disabled>
+            <span>🔌</span> PUTUS KONEKSI
+        </button>
+
+        <button id="clear-btn" class="float-btn" onclick="clearPaper()">
+            <span>🗑️</span> BERSIHKAN
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    
+   <script>
+        const socket = io();
+        const outputDiv = document.getElementById('output');
+        const statusSpan = document.getElementById('connection-status');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+
+        // Fungsi Tombol
+        function clearPaper() {
+            outputDiv.innerHTML = '';
+            const info = document.createElement('div');
+            info.innerHTML = '<br><center>--- PAPER CLEARED ---</center><br>';
+            info.style.color = '#ccc'; info.style.fontSize = '10px';
+            outputDiv.appendChild(info);
+        }
+
+        function disconnectDevice() {
+            if(confirm("Yakin ingin memutus koneksi Bluetooth device saat ini?")) {
+                socket.emit('force_disconnect');
+            }
+        }
+
+        // --- SOCKET EVENT HANDLERS ---
+
+        // 1. SAAT BROWSER KONEK KE SERVER PYTHON
+        socket.on('connect', () => {
+            console.log("Websocket Connected!");
+            // LANGSUNG TANYA STATUS SAAT INI KE SERVER
+            socket.emit('get_status'); 
+        });
+
+        // 2. TERIMA UPDATE STATUS DARI SERVER
+        socket.on('status_update', (data) => {
+            console.log("Status Update:", data.status);
+            
+            if(data.status === 'connected') {
+                statusSpan.innerText = "● DEVICE CONNECTED";
+                statusSpan.className = "connected";
+                // Ubah warna teks jadi hijau
+                statusSpan.style.color = "green"; 
+                disconnectBtn.disabled = false;
+                disconnectBtn.style.opacity = "1";
+                disconnectBtn.style.cursor = "pointer";
+            } else {
+                statusSpan.innerText = "● WAITING CONNECTION...";
+                statusSpan.className = "disconnected";
+                // Ubah warna teks jadi merah
+                statusSpan.style.color = "red";
+                disconnectBtn.disabled = true;
+                disconnectBtn.style.opacity = "0.5";
+                disconnectBtn.style.cursor = "not-allowed";
+            }
+        });
+
+        socket.on('disconnect', () => {
+            statusSpan.innerText = "● SERVER DOWN";
+            statusSpan.style.color = "gray";
+            disconnectBtn.disabled = true;
+        });
+
+        // 3. TERIMA DATA PRINT
+        socket.on('print-output', (data) => {
+            const newLine = document.createElement('div');
+            newLine.classList.add('line', 'printing-animation');
+            let safeText = data.text || "";
+            newLine.innerHTML = safeText.replace(/ /g, '&nbsp;'); 
+            
+            if(data.align === 'center') newLine.style.textAlign = 'center';
+            if(data.align === 'right') newLine.style.textAlign = 'right';
+            if(data.bold) newLine.style.fontWeight = 'bold';
+
+            outputDiv.appendChild(newLine);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
