@@ -1,5 +1,42 @@
 # 🖨️ Bluetooth Thermal Printer Simulator
 
+**Ubah laptop kamu menjadi Printer Thermal Bluetooth Virtual (Text & Image Support)!**
+
+Project ini adalah simulator printer thermal berbasis web yang berjalan di atas Python. Aplikasi ini memungkinkan kamu untuk mengirim perintah cetak dari HP (Aplikasi Kasir/POS) via Bluetooth ke Laptop.
+
+Berbeda dengan simulator biasa, versi ini **sudah mendukung Gambar (Logo/QR Code)** dan memiliki **Smart Parser** untuk menerjemahkan perintah ESC/POS dengan rapi.
+
+![Status Project](https://img.shields.io/badge/Status-Active-green) ![Python](https://img.shields.io/badge/Python-3.x-blue) ![Feature](https://img.shields.io/badge/Support-Text_%26_Image-orange)
+
+---
+
+## ✨ Fitur Utama
+
+* **🖼️ Image & QR Code Support:** Bisa mencetak logo dan QR Code (Format Raster ESC/POS `GS v 0`) yang dikonversi otomatis menjadi gambar di browser.
+* **🧠 Smart ESC/POS Parser:** Tidak hanya memfilter sampah, tapi menerjemahkan perintah alignment (Rata Kiri, Tengah, Kanan) dan Bold secara akurat.
+* **⚡ Real-time Printing:** Teks dan gambar muncul seketika saat dikirim dari HP menggunakan teknologi WebSockets.
+* **🛡️ Robust Error Handling:** Anti-crash saat menerima karakter encoding aneh dari printer driver.
+* **📱 Interactive UI:**
+  * Simulasi kertas gulung (auto-scroll).
+  * Indikator Status (Online/Offline/Connected).
+  * Tombol **Disconnect** & **Clear Paper**.
+
+---
+
+## 🛠️ Arsitektur Sistem
+
+Aplikasi ini bekerja dengan menjembatani Hardware Bluetooth Laptop dengan Web Browser:
+
+```mermaid
+graph LR
+    A[HP / Aplikasi Kasir] -- Bluetooth SPP --> B((Laptop Bluetooth Hardware));
+    B -- COM Port (Serial) --> C[Python Backend (app.py)];
+    C -- Image Processing (Pillow) --> D{Cek Tipe Data};
+    D -- Teks --> E[Web Frontend (SocketIO)];
+    D -- Gambar (Base64) --> E;
+    E -- Visual Output --> F[Browser User];
+```
+
 **Ubah laptop kamu menjadi Printer Thermal Bluetooth Virtual!**
 
 Project ini adalah simulator printer thermal berbasis web yang berjalan di atas Python. Aplikasi ini memungkinkan kamu untuk mengirim perintah cetak dari HP (Aplikasi Kasir/POS) via Bluetooth ke Laptop, dan melihat hasil "cetakan"-nya secara real-time di layar browser tanpa menghabiskan kertas asli.
@@ -70,12 +107,12 @@ Simpan folder project ini di komputer kamu. Struktur foldernya harus seperti ini
 
 ### 2. Install Library Python
 
-Buka Terminal/CMD di folder project, lalu jalankan:
+Kita membutuhkan library `Pillow` untuk memproses gambar. Buka Terminal/CMD di folder project, lalu jalankan:
 
 **Bash**
 
 ```
-pip install pyserial flask flask-socketio eventlet
+pip install pyserial flask flask-socketio eventlet Pillow
 ```
 
 ### 3. Konfigurasi Bluetooth (PENTING!)

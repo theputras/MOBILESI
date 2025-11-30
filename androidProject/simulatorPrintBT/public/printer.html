@@ -15,8 +15,8 @@
         }
         
         #thermal-paper {
-            width: 300px;
-            min-height: 400px;
+            width: 500px;
+            min-height: 250px;
             margin-bottom: 100px; /* Space lebih lebar buat tombol */
             background-color: #fff;
             padding: 15px;
@@ -197,6 +197,24 @@
             if(data.bold) newLine.style.fontWeight = 'bold';
 
             outputDiv.appendChild(newLine);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+        // --- TAMBAHAN BARU: UNTUK MENERIMA GAMBAR ---
+        socket.on('print-image', (data) => {
+            const imgContainer = document.createElement('div');
+            imgContainer.classList.add('printing-animation');
+            imgContainer.style.textAlign = 'center'; // Gambar biasanya di tengah
+            imgContainer.style.marginBottom = '5px';
+
+            const img = document.createElement('img');
+            img.src = "data:image/png;base64," + data.image;
+            img.style.maxWidth = '100%'; // Biar ga keluar kertas
+            img.style.imageRendering = 'pixelated'; // Biar tajem ala printer thermal
+
+            imgContainer.appendChild(img);
+            outputDiv.appendChild(imgContainer);
+            
+            // Auto scroll
             window.scrollTo(0, document.body.scrollHeight);
         });
     </script>
