@@ -11,7 +11,8 @@ from PIL import Image
 BLUETOOTH_PORT = 'COM4'  # Sesuaikan port kamu
 BAUD_RATE = 9600
 
-app = Flask(__name__, template_folder='public', static_folder='public')
+# app = Flask(__name__, template_folder='public', static_folder='public')
+app = Flask(__name__, template_folder='public', static_folder='public', static_url_path='')
 app.config['SECRET_KEY'] = 'rahasia'
 socketio = SocketIO(app, async_mode='threading')
 

@@ -126,13 +126,28 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     
-   <script>
+    <script>
         const socket = io();
         const outputDiv = document.getElementById('output');
         const statusSpan = document.getElementById('connection-status');
         const disconnectBtn = document.getElementById('disconnect-btn');
 
-        // Fungsi Tombol
+        // --- SETUP AUDIO GIMMICK ---
+        // Pastikan file 'print_sound.mp3' ada di folder public
+        const printAudio = new Audio('print_sound.mp3');
+        printAudio.volume = 0.5; // Atur volume biar ga kaget (0.0 - 1.0)
+
+        function playPrintSound() {
+            console.log("Playing print sound");
+            // Reset durasi ke 0 biar kalau ngeprint cepet suaranya bisa tumpuk/ulang cepat
+            printAudio.currentTime = 0;
+            printAudio.play().catch(e => {
+                // Browser modern memblokir suara otomatis kalau user belum klik apapun di web
+                console.log("Audio diblokir browser (klik halaman dulu agar bunyi aktif)");
+            });
+        }
+
+        // --- FUNGSI TOMBOL ---
         function clearPaper() {
             outputDiv.innerHTML = '';
             const info = document.createElement('div');
@@ -149,21 +164,15 @@
 
         // --- SOCKET EVENT HANDLERS ---
 
-        // 1. SAAT BROWSER KONEK KE SERVER PYTHON
         socket.on('connect', () => {
             console.log("Websocket Connected!");
-            // LANGSUNG TANYA STATUS SAAT INI KE SERVER
             socket.emit('get_status'); 
         });
 
-        // 2. TERIMA UPDATE STATUS DARI SERVER
         socket.on('status_update', (data) => {
-            console.log("Status Update:", data.status);
-            
             if(data.status === 'connected') {
                 statusSpan.innerText = "● DEVICE CONNECTED";
                 statusSpan.className = "connected";
-                // Ubah warna teks jadi hijau
                 statusSpan.style.color = "green"; 
                 disconnectBtn.disabled = false;
                 disconnectBtn.style.opacity = "1";
@@ -171,7 +180,6 @@
             } else {
                 statusSpan.innerText = "● WAITING CONNECTION...";
                 statusSpan.className = "disconnected";
-                // Ubah warna teks jadi merah
                 statusSpan.style.color = "red";
                 disconnectBtn.disabled = true;
                 disconnectBtn.style.opacity = "0.5";
@@ -185,8 +193,10 @@
             disconnectBtn.disabled = true;
         });
 
-        // 3. TERIMA DATA PRINT
+        // --- EVENT PRINT TEKS ---
         socket.on('print-output', (data) => {
+            playPrintSound(); // <--- BUNYIKAN SUARA
+
             const newLine = document.createElement('div');
             newLine.classList.add('line', 'printing-animation');
             let safeText = data.text || "";
@@ -199,22 +209,23 @@
             outputDiv.appendChild(newLine);
             window.scrollTo(0, document.body.scrollHeight);
         });
-        // --- TAMBAHAN BARU: UNTUK MENERIMA GAMBAR ---
+
+        // --- EVENT PRINT GAMBAR ---
         socket.on('print-image', (data) => {
+            playPrintSound(); // <--- BUNYIKAN SUARA JUGA
+
             const imgContainer = document.createElement('div');
             imgContainer.classList.add('printing-animation');
-            imgContainer.style.textAlign = 'center'; // Gambar biasanya di tengah
+            imgContainer.style.textAlign = 'center';
             imgContainer.style.marginBottom = '5px';
 
             const img = document.createElement('img');
             img.src = "data:image/png;base64," + data.image;
-            img.style.maxWidth = '100%'; // Biar ga keluar kertas
-            img.style.imageRendering = 'pixelated'; // Biar tajem ala printer thermal
+            img.style.maxWidth = '100%';
+            img.style.imageRendering = 'pixelated';
 
             imgContainer.appendChild(img);
             outputDiv.appendChild(imgContainer);
-            
-            // Auto scroll
             window.scrollTo(0, document.body.scrollHeight);
         });
     </script>
