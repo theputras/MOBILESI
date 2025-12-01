@@ -45,24 +45,7 @@ Sebelum memulai, pastikan kamu memiliki:
 
 ---
 
-## 🚀 Langkah 1: Setup Project
 
-1. Buat project baru di Android Studio.
-2. Pilih **Empty Views Activity**.
-3. Language: **Java**.
-4. Minimum SDK: **API 24** (atau sesuai kebutuhan).
-5. Target SDK: **34** (Android 14).
-
-Struktur folder yang akan kita bangun:
-
-```text
-com.theputras.printbt
-├── MainActivity.java           // Menu Utama
-├── DeviceListActivity.java     // Scan & Pairing
-├── PrintTextActivity.java      // Input Teks
-└── utils
-    └── BluetoothHelper.java    // Logic Koneksi (Otak Aplikasi)
-```
 
 
 ## ⚙️ Langkah 2: Pengaturan Izin (Manifest)
