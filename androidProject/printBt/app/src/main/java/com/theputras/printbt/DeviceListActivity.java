@@ -109,6 +109,16 @@ public class DeviceListActivity extends AppCompatActivity {
                 isConnecting = false;
 
                 if (success) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     Toast.makeText(this, "Berhasil Terkoneksi ke " + device.getName(), Toast.LENGTH_SHORT).show();
                     updateUI();
                     finish(); // Opsional: Langsung tutup halaman list kalau sukses biar user balik ke menu utama
