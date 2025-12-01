@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+    <TextView
+        android:id="@+id/tv_status_print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: ..."
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DETAIL MAHASISWA"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#F0F0F0"
+        android:padding="16dp">
+
+        <TextView android:text="Program Studi:" android:textStyle="bold" android:layout_height="18dp"  android:layout_width="match_parent"/>
+        <TextView android:id="@+id/tv_data_prodi" android:text="..." android:textSize="18sp" android:layout_marginBottom="10dp" android:layout_height="wrap_content" android:layout_width="match_parent"/>
+
+        <TextView android:text="NIM:" android:textStyle="bold" android:layout_height="18dp"  android:layout_width="match_parent"/>
+        <TextView android:id="@+id/tv_data_nim" android:text="..." android:textSize="18sp" android:layout_marginBottom="10dp" android:layout_height="wrap_content" android:layout_width="match_parent"/>
+
+        <TextView android:text="Nama:" android:textStyle="bold" android:layout_height="18dp"  android:layout_width="match_parent"/>
+        <TextView android:id="@+id/tv_data_nama" android:text="..." android:textSize="18sp" android:layout_marginBottom="10dp" android:layout_height="wrap_content"  android:layout_width="match_parent"/>
+
+        <TextView android:text="TTL:" android:textStyle="bold" android:layout_height="18dp"  android:layout_width="match_parent"/>
+        <TextView android:id="@+id/tv_data_ttl" android:text="..." android:textSize="18sp" android:layout_marginBottom="10dp" android:layout_height="wrap_content"  android:layout_width="match_parent"/>
+
+        <TextView android:text="Umur:" android:textStyle="bold" android:layout_height="18dp"  android:layout_width="match_parent"/>
+        <TextView android:id="@+id/tv_data_umur" android:text="..." android:textSize="18sp" android:layout_marginBottom="10dp" android:layout_height="wrap_content"  android:layout_width="match_parent"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_data_print"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="CETAK / PRINT"
+        android:layout_marginTop="30dp"/>
+
+</LinearLayout>

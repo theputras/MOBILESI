@@ -66,14 +66,27 @@ public class FireListFragment extends Fragment {
         });
 
         // 2. Logic Klik Item -> Muncul Menu Update/Delete
-        // Kita panggil method setOnItemClickListener yang akan kita buat di Adapter
         adapter.setOnItemClickListener(model -> {
-            String[] options = {"Update Data", "Hapus Data", "Print Data"};
+            String[] options = {"Cek Data (Print)", "Update Data", "Hapus Data"};
+
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Pilih Aksi: " + model.getNama());
             builder.setItems(options, (dialog, which) -> {
                 if (which == 0) {
-                    // --- LOGIC UPDATE (DATA DIKIRIM KE FORM) ---
+                    // --- 1. CEK DATA (Pindah ke DetailActivity) ---
+                    // Jangan ke DataActivity lagi, nanti looping!
+                    Intent intent = new Intent(getContext(), DetailActivity.class);
+
+                    intent.putExtra("id", model.getId());
+                    intent.putExtra("prodi", model.getProdi());
+                    intent.putExtra("nama", model.getNama());
+                    intent.putExtra("nim", model.getNim());
+                    intent.putExtra("ttl", model.getTtl());
+                    intent.putExtra("umur", model.getUmur());
+                    startActivity(intent);
+
+                } else if (which == 1) {
+                    // --- 2. UPDATE ---
                     Intent intent = new Intent(getContext(), FormActivity.class);
                     intent.putExtra("id", model.getId());
                     intent.putExtra("prodi", model.getProdi());
@@ -82,8 +95,9 @@ public class FireListFragment extends Fragment {
                     intent.putExtra("ttl", model.getTtl());
                     intent.putExtra("umur", model.getUmur());
                     startActivity(intent);
+
                 } else {
-                    // --- LOGIC DELETE ---
+                    // --- 3. DELETE ---
                     deleteData(model.getId());
                 }
             });
