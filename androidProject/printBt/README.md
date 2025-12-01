@@ -36,6 +36,7 @@ com.theputras.printbt
 ```
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 ## 🛠️ Persiapan Awal
 
 Sebelum memulai, pastikan kamu memiliki:
@@ -67,6 +68,8 @@ com.theputras.printbt
 
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 ## ⚙️ Langkah 2: Pengaturan Izin (Manifest)
 
 Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan permission khusus di `AndroidManifest.xml`.
@@ -78,6 +81,7 @@ Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan per
 ---
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 📱 Screenshot
 
 
@@ -85,6 +89,8 @@ Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan per
 | :-----------------------------------------------: | :-----------------------------------------------: | :-----------------------------------------------: |
 | ![1764551044281](images/README/1764551044281.png) | ![1764551082894](images/README/1764551082894.png) | ![1764551104392](images/README/1764551104392.png) |
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 ## 🧠 Langkah 3: Membuat Logic Bluetooth (Backend)

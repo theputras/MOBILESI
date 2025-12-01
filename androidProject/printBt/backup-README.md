@@ -12,16 +12,22 @@ Aplikasi Android sederhana namun *powerful* untuk mencetak teks ke **Printer The
 * **Status Monitor:** Indikator status koneksi *real-time* di menu utama.
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 ## 
 
 
 =======
+=======
+>>>>>>> Stashed changes
 ## 📱 Screenshot
 
 
 |               Menu Utama               |             Cari Printer             |              Input & Print              |
 | :------------------------------------: | :----------------------------------: | :-------------------------------------: |
 | *(Tambahkan Screenshot Main Activity)* | *(Tambahkan Screenshot Device List)* | *(Tambahkan Screenshot Print Activity)* |
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 ## 🛠️ Tech Stack
