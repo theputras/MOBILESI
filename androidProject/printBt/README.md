@@ -89,10 +89,7 @@ Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan per
 | :-----------------------------------------------: | :-----------------------------------------------: | :-----------------------------------------------: |
 | ![1764551044281](images/README/1764551044281.png) | ![1764551082894](images/README/1764551082894.png) | ![1764551104392](images/README/1764551104392.png) |
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 ## 🧠 Langkah 3: Membuat Logic Bluetooth (Backend)
 
 Kita butuh satu class khusus untuk menangani koneksi agar **stabil** dan tidak putus saat pindah layar. Kita menggunakan pola *Singleton*.
