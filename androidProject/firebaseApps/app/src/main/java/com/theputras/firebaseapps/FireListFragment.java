@@ -68,7 +68,7 @@ public class FireListFragment extends Fragment {
         // 2. Logic Klik Item -> Muncul Menu Update/Delete
         // Kita panggil method setOnItemClickListener yang akan kita buat di Adapter
         adapter.setOnItemClickListener(model -> {
-            String[] options = {"Update Data", "Hapus Data"};
+            String[] options = {"Update Data", "Hapus Data", "Print Data"};
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Pilih Aksi: " + model.getNama());
             builder.setItems(options, (dialog, which) -> {

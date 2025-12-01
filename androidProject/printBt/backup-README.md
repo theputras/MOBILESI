@@ -11,9 +11,18 @@ Aplikasi Android sederhana namun *powerful* untuk mencetak teks ke **Printer The
 * **Smart Feeding:** Mencegah *buffer stuck* (teks tidak keluar) dengan perintah *feed lines* otomatis.
 * **Status Monitor:** Indikator status koneksi *real-time* di menu utama.
 
+<<<<<<< Updated upstream
 ## 
 
 
+=======
+## 📱 Screenshot
+
+
+|               Menu Utama               |             Cari Printer             |              Input & Print              |
+| :------------------------------------: | :----------------------------------: | :-------------------------------------: |
+| *(Tambahkan Screenshot Main Activity)* | *(Tambahkan Screenshot Device List)* | *(Tambahkan Screenshot Print Activity)* |
+>>>>>>> Stashed changes
 
 ## 🛠️ Tech Stack
 
