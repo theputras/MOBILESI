@@ -35,8 +35,6 @@ com.theputras.printbt
     └── BluetoothHelper.java    // Logic Koneksi (Otak Aplikasi)
 ```
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 ## 🛠️ Persiapan Awal
 
 Sebelum memulai, pastikan kamu memiliki:
@@ -66,10 +64,7 @@ com.theputras.printbt
     └── BluetoothHelper.java    // Logic Koneksi (Otak Aplikasi)
 ```
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+
 ## ⚙️ Langkah 2: Pengaturan Izin (Manifest)
 
 Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan permission khusus di `AndroidManifest.xml`.
@@ -80,8 +75,7 @@ Karena Android 12 ke atas memperketat izin Bluetooth, kita wajib menambahkan per
 
 ---
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
 📱 Screenshot
 
 
