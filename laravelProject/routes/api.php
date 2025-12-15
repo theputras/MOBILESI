@@ -78,7 +78,7 @@ Route::post('/login', [LoginController::class, 'login']);
 | 2. PROTECTED ROUTES (Harus Login Dulu)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth:sanctum')->group(function () {
+// Route::middleware('auth:sanctum')->group(function () {
     
     // Route untuk "Read" semua item
 Route::get('/items', [ItemController::class, 'index']);
@@ -145,4 +145,4 @@ Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy']);
     
     // Route Khusus API untuk Dropdown Kasir (Yang tadi kita bahas)
     Route::get('/tvs-available', [TvController::class, 'getAvailableTvs']);
-});
+// });
