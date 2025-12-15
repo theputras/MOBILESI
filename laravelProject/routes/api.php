@@ -131,17 +131,17 @@ Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy']);
     
     
     // Menampilkan halaman daftar TV (Admin)
-    Route::get('/tvs', [TvController::class, 'index'])->name('tvs.index');
+    Route::get('/tvs', [TvController::class, 'index']);
 
     // Menyimpan data TV baru
-    Route::post('/tvs', [TvController::class, 'store'])->name('tvs.store');
+    Route::post('/tvs', [TvController::class, 'store']);
 
     // Update data TV (Edit Status / Console)
     // Pakai {id} karena di controller kamu menangkap $id
-    Route::put('/tvs/{id}', [TvController::class, 'update'])->name('tvs.update');
+    Route::put('/tvs/{id}', [TvController::class, 'update']);
 
     // Menghapus data TV
-    Route::delete('/tvs/{id}', [TvController::class, 'destroy'])->name('tvs.destroy');
+    Route::delete('/tvs/{id}', [TvController::class, 'destroy']);
 });
 // Route Khusus API untuk Dropdown Kasir (Yang tadi kita bahas)
-Route::get('/tvs-available', [TvController::class, 'getAvailableTvs'])->name('tvs.available');
+Route::get('/tvs-available', [TvController::class, 'getAvailableTvs']);
