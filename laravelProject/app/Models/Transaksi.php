@@ -11,15 +11,14 @@ class Transaksi extends Model
     
     protected $table = 'transaksi';
     protected $primaryKey = 'id_transaksi';
-    protected $fillable = [
-        'nama_penyewa', 
-        'nomor_tv', 
-        'id_console', 
-        'durasi_jam', 
-        'total_tagihan', 
-        'uang_bayar', 
-        'uang_kembalian', 
-        'metode_pembayaran', 
+protected $fillable = [
+        'nama_penyewa',
+        'tv_id',        // <--- INI SEBELUMNYA HILANG
+        'id_paket',     // <--- INI JUGA
+        'total_tagihan',
+        'uang_bayar',
+        'uang_kembalian',
+        'metode_pembayaran',
         'status_pembayaran'
     ];
 
