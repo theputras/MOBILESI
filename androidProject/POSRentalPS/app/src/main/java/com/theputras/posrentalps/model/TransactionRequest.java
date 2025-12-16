@@ -6,23 +6,25 @@ public class TransactionRequest {
     @SerializedName("nama_penyewa")
     public String namaPenyewa;
 
-    @SerializedName("nomor_tv")
-    public String nomorTv;
+    @SerializedName("tv_id") // Sesuai dengan validation Laravel 'tv_id'
+    public int tvId;
 
-    @SerializedName("id_console")
-    public int idConsole;
-
-    @SerializedName("durasi_jam")
-    public int durasiJam;
+    @SerializedName("id_paket") // Sesuai validation 'id_paket'
+    public int idPaket;
 
     @SerializedName("uang_bayar")
     public int uangBayar;
 
-    public TransactionRequest(String nama, String tv, int console, int durasi, int bayar) {
+    // Tambahan untuk fitur QRIS nanti
+    @SerializedName("metode_pembayaran")
+    public String metodePembayaran;
+
+    // Constructor
+    public TransactionRequest(String nama, int tvId, int idPaket, int bayar) {
         this.namaPenyewa = nama;
-        this.nomorTv = tv;
-        this.idConsole = console;
-        this.durasiJam = durasi;
+        this.tvId = tvId;
+        this.idPaket = idPaket;
         this.uangBayar = bayar;
+        this.metodePembayaran = "TUNAI"; // Default
     }
 }

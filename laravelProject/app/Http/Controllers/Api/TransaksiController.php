@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use App\Models\JenisConsole;
+use App\Models\PaketSewa;
+use App\Models\Tv;
 
 class TransaksiController extends Controller
 {
@@ -28,26 +30,31 @@ class TransaksiController extends Controller
     /**
      * POST: Simpan Transaksi Baru (Untuk Tombol Bayar/Simpan)
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
-        // 1. Validasi Input dari Android
+        // 1. Validasi Input (HARUS MATCH DENGAN ANDROID)
+        // Android kirim: nama_penyewa, tv_id, id_paket, uang_bayar
         $request->validate([
             'nama_penyewa' => 'required|string',
-            'nomor_tv'     => 'required|integer',
-            'id_console'   => 'required|exists:jenis_console,id_console', // Harus ada di tabel master
-            'durasi_jam'   => 'required|integer|min:1',
+            'tv_id'        => 'required|exists:tvs,id', // Android kirim 'tv_id', Server lama minta 'nomor_tv' (SALAH)
+            'id_paket'     => 'required|exists:paket_sewa,id_paket', 
             'uang_bayar'   => 'required|integer|min:0',
         ]);
 
-        // 2. Ambil Harga Console dari Database (Biar Akurat)
-        $console = JenisConsole::findOrFail($request->id_console);
-        $hargaPerJam = $console->harga_per_jam;
+        // 2. Ambil Data Paket
+        $paket = PaketSewa::findOrFail($request->id_paket);
+        
+        // 3. Cek Status TV
+        $tv = Tv::findOrFail($request->tv_id);
+        if($tv->status != 'available') {
+             // Return JSON agar Android tidak error Malformed
+             return response()->json(['message' => 'TV ini baru saja dipesan orang lain!'], 409);
+        }
 
-        // 3. Hitung Otomatis (Logika Kasir)
-        $totalTagihan = $hargaPerJam * $request->durasi_jam;
+        // 4. Hitung Keuangan (Otomatis Server)
+        $totalTagihan = $paket->harga;
         $uangKembalian = $request->uang_bayar - $totalTagihan;
 
-        // Cek kalau uang kurang
         if ($uangKembalian < 0) {
             return response()->json([
                 'message' => 'Uang pembayaran kurang!',
@@ -55,23 +62,24 @@ class TransaksiController extends Controller
             ], 400);
         }
 
-        // 4. Simpan ke Database
+        // 5. Simpan Transaksi
         $transaksi = Transaksi::create([
             'nama_penyewa'      => $request->nama_penyewa,
-            'nomor_tv'          => $request->nomor_tv,
-            'id_console'        => $request->id_console,
-            'durasi_jam'        => $request->durasi_jam,
-            'total_tagihan'     => $totalTagihan,     // Hasil hitung server
+            'tv_id'             => $request->tv_id,
+            'id_paket'          => $paket->id_paket,
+            'total_tagihan'     => $totalTagihan,
             'uang_bayar'        => $request->uang_bayar,
-            'uang_kembalian'    => $uangKembalian,    // Hasil hitung server
-            'metode_pembayaran' => 'TUNAI',           // Default
+            'uang_kembalian'    => $uangKembalian,
+            'metode_pembayaran' => $request->metode_pembayaran ?? 'TUNAI',
             'status_pembayaran' => 'LUNAS',
         ]);
 
-        // 5. Kembalikan Respon ke Android (Termasuk data hitungan tadi buat dicetak)
+        // 6. Update Status TV jadi Booked
+        $tv->update(['status' => 'booked']);
+
         return response()->json([
-            'message' => 'Transaksi berhasil disimpan',
-            'data' => $transaksi->load('console') // Load nama console biar lengkap
+            'message' => 'Transaksi berhasil & TV aktif',
+            'data' => $transaksi
         ], 201);
     }
 

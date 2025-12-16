@@ -2,18 +2,50 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#F5F5F5">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerTvGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabCart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        android:text="Bayar"
+        android:textColor="@color/white"
+        android:elevation="10dp"
+        app:elevation="10dp"
+        app:icon="@mipmap/ic_launcher"
+        app:iconTint="@color/white"
+        app:backgroundTint="@color/primary_orange"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
+    <TextView
+        android:id="@+id/tvCartCount"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:text="0"
+        android:background="@drawable/bg_circle_red"
+        android:textColor="#FFF"
+        android:gravity="center"
+        android:textSize="12sp"
+
+        android:elevation="12dp"
+        android:translationZ="12dp"
+        android:visibility="gone"
+
+        app:layout_constraintTop_toTopOf="@id/fabCart"
+        app:layout_constraintEnd_toEndOf="@id/fabCart"
+        android:layout_marginTop="-10dp"
+        android:layout_marginEnd="-5dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
