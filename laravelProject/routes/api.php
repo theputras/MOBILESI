@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\KonsumenController;
 use App\Http\Controllers\Api\TransaksiController;
 use App\Http\Controllers\Api\MasterDataController;
 use App\Http\Controllers\Api\TvController;
+use App\Http\Controllers\Api\apiprodukscontroller;
 
 Route::get ('/user', function (Request $request) {
 return $request->user () ;
@@ -146,3 +147,22 @@ Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy']);
     // Route Khusus API untuk Dropdown Kasir (Yang tadi kita bahas)
     Route::get('/tvs-available', [TvController::class, 'getAvailableTvs']);
 // });
+
+
+Route::get('produk/qb', [apiprodukscontroller::class, 'index_qb']);
+Route::post('produk/qb', [apiprodukscontroller::class, 'store_qb']);
+Route::get('produk/qb/{id}', [apiprodukscontroller::class, 'show_qb']);
+Route::put('produk/qb/{id}', [apiprodukscontroller::class, 'update_qb']);
+Route::delete('produk/qb/{id}', [apiprodukscontroller::class, 'destroy_qb']);
+
+// Route untuk ORM 
+Route::get('produk/orm', [apiprodukscontroller::class, 'index_orm']);
+Route::post('produk/orm', [apiprodukscontroller::class, 'store_orm']);
+Route::get('produk/orm/{id}', [apiprodukscontroller::class, 'show_orm']);
+Route::put('produk/orm/{id}', [apiprodukscontroller::class, 'update_orm']);
+Route::delete('produk/orm/{id}', [apiprodukscontroller::class, 'destroy_orm']);
+
+Route::get('tes', [apiprodukscontroller::class, 'test']);
+// bacaqb and bacaorm kept for legacy check, mapping to new methods
+Route::get('bacaqb', [apiprodukscontroller::class, 'index_qb']);
+Route::get('bacaorm', [apiprodukscontroller::class, 'index_orm']);
