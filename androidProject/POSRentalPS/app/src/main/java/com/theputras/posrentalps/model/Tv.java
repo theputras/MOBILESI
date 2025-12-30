@@ -15,6 +15,9 @@ public class Tv {
     @SerializedName("jenis_console")
     private JenisConsole jenisConsole;
 
+    // Tambahkan constructor kosong (Dibutuhkan GSON)
+    public Tv() {}
+
     public int getId() { return id; }
     public String getNomorTv() { return nomorTv; }
     public String getStatus() { return status; }

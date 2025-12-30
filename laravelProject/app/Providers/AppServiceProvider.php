@@ -19,6 +19,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        
     }
+    // app/Providers/EventServiceProvider.php
+protected $listen = [
+    \App\Events\RentalStarted::class => [
+        \App\Listeners\UpdateTvStatusListener::class,
+    ],
+];
+
 }

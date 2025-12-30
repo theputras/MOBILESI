@@ -146,6 +146,8 @@ Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy']);
     
     // Route Khusus API untuk Dropdown Kasir (Yang tadi kita bahas)
     Route::get('/tvs-available', [TvController::class, 'getAvailableTvs']);
+    Route::get('/tvs-booked', [TvController::class, 'getBookedTvs']);
+    Route::get('/tvs-maintenance', [TvController::class, 'getMaintenanceTvs']);
 // });
 
 

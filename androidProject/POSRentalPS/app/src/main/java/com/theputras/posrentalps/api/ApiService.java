@@ -13,16 +13,16 @@ import retrofit2.http.POST;
 
 public interface ApiService {
     // Sesuai Route::get('/tvs-available', ...)
-    @GET("api/tvs-available")
+    @GET("tvs-available")
     Call<TvResponse> getAvailableTvs();
 
     // Sesuai Route::get('/master/pakets', ...)
-    @GET("api/master/pakets")
+    @GET("master/pakets")
     Call<List<PaketSewa>> getPakets();
 
     // Sesuai Route::post('/transaksi', ...)
     // Note: Laravel biasanya return satu object transaksi yang baru dibuat
-    @POST("api/transaksi")
+    @POST("transaksi")
     Call<ApiResponse<TransactionItem>> saveTransaction(@Body TransactionRequest request);
 
 }

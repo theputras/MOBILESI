@@ -144,55 +144,40 @@ public class PaymentActivity extends AppCompatActivity {
         hasError = false;
         processedCount = 0;
 
-        // Hitung total request
-        totalRequestQueue = 0;
-        for (CartManager.CartDisplay item : CartManager.getInstance().getDisplayList()) {
-            totalRequestQueue += item.qty;
-        }
+        // 1. Queue sekarang berdasarkan jumlah item unik (setiap item harus beda TV)
+        totalRequestQueue = CartManager.getInstance().getDisplayList().size();
 
         ApiService api = ApiClient.getClient().create(ApiService.class);
 
-        // 2. Looping Kirim Data
+        // 2. Looping kirim data per Item (Bukan per Qty)
         for (CartManager.CartDisplay item : CartManager.getInstance().getDisplayList()) {
 
+            // Pastikan request object membawa data terbaru
             item.request.namaPenyewa = name;
             item.request.metodePembayaran = rbQris.isChecked() ? "QRIS" : "TUNAI";
-
-            // Set bayar per item = harga item (biar server catat lunas per item)
-            item.request.uangBayar = item.price;
-
-            for (int i = 0; i < item.qty; i++) {
-                // ... di dalam looping saveTransaction ...
-
-                api.saveTransaction(item.request).enqueue(new Callback<ApiResponse<TransactionItem>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<TransactionItem>> call, Response<ApiResponse<TransactionItem>> response) {
-                        if (!response.isSuccessful()) {
-                            hasError = true;
-
-                            // --- TAMBAHAN DEBUGGING ---
-                            try {
-                                // Ini akan mencetak pesan error dari Laravel ke Logcat
-                                // Contoh: "TV ini baru saja dipesan orang lain!" atau "Uang kurang!"
-                                String errorBody = response.errorBody().string();
-                                android.util.Log.e("API_ERROR", "Code: " + response.code() + " - " + errorBody);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            // --------------------------
-                        }
-                        checkComplete(name, finalUangBayar);
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse<TransactionItem>> call, Throwable t) {
+            item.request.uangBayar = item.price; // Harga per paket TV tersebut
+            android.util.Log.d("PAYMENT_DEBUG", "Mengirim TV ID: " + item.request.tvId);
+            // Kirim request satu per satu untuk setiap TV yang dipilih
+            api.saveTransaction(item.request).enqueue(new Callback<ApiResponse<TransactionItem>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<TransactionItem>> call, Response<ApiResponse<TransactionItem>> response) {
+                    if (!response.isSuccessful()) {
                         hasError = true;
-                        // Log error koneksi
-                        android.util.Log.e("API_FAILURE", "Error: " + t.getMessage());
-                        checkComplete(name, finalUangBayar);
+                        // Ambil pesan error asli dari Laravel (Contoh: "TV tidak tersedia")
+                        try {
+                            String errorMsg = response.errorBody().string();
+                            android.util.Log.e("API_ERROR", errorMsg);
+                        } catch (Exception e) { e.printStackTrace(); }
                     }
-                });
-            }
+                    checkComplete(name, finalUangBayar);
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<TransactionItem>> call, Throwable t) {
+                    hasError = true;
+                    checkComplete(name, finalUangBayar);
+                }
+            });
         }
     }
 

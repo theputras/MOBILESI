@@ -8,6 +8,7 @@ use App\Models\Transaksi;
 use App\Models\JenisConsole;
 use App\Models\PaketSewa;
 use App\Models\Tv;
+use Carbon\Carbon;
 
 class TransaksiController extends Controller
 {
@@ -30,58 +31,72 @@ class TransaksiController extends Controller
     /**
      * POST: Simpan Transaksi Baru (Untuk Tombol Bayar/Simpan)
      */
-   public function store(Request $request)
-    {
-        // 1. Validasi Input (HARUS MATCH DENGAN ANDROID)
-        // Android kirim: nama_penyewa, tv_id, id_paket, uang_bayar
-        $request->validate([
-            'nama_penyewa' => 'required|string',
-            'tv_id'        => 'required|exists:tvs,id', // Android kirim 'tv_id', Server lama minta 'nomor_tv' (SALAH)
-            'id_paket'     => 'required|exists:paket_sewa,id_paket', 
-            'uang_bayar'   => 'required|integer|min:0',
-        ]);
+public function store(Request $request)
+{
+    // Validasi input transaksi
+    $validator = $request->validate([
+        'tv_id'          => 'required|exists:tvs,id',
+        'id_paket'       => 'required|exists:paket_sewa,id_paket',  // Pastikan paket valid
+        'nama_penyewa'   => 'required|string',
+        'uang_bayar'     => 'required|integer|min:0',
+        'metode_pembayaran' => 'required|string',
+    ]);
 
-        // 2. Ambil Data Paket
-        $paket = PaketSewa::findOrFail($request->id_paket);
-        
-        // 3. Cek Status TV
-        $tv = Tv::findOrFail($request->tv_id);
-        if($tv->status != 'available') {
-             // Return JSON agar Android tidak error Malformed
-             return response()->json(['message' => 'TV ini baru saja dipesan orang lain!'], 409);
-        }
+    // Ambil data TV berdasarkan id
+    $tv = Tv::find($request->tv_id);
 
-        // 4. Hitung Keuangan (Otomatis Server)
-        $totalTagihan = $paket->harga;
-        $uangKembalian = $request->uang_bayar - $totalTagihan;
-
-        if ($uangKembalian < 0) {
-            return response()->json([
-                'message' => 'Uang pembayaran kurang!',
-                'kurang' => abs($uangKembalian)
-            ], 400);
-        }
-
-        // 5. Simpan Transaksi
-        $transaksi = Transaksi::create([
-            'nama_penyewa'      => $request->nama_penyewa,
-            'tv_id'             => $request->tv_id,
-            'id_paket'          => $paket->id_paket,
-            'total_tagihan'     => $totalTagihan,
-            'uang_bayar'        => $request->uang_bayar,
-            'uang_kembalian'    => $uangKembalian,
-            'metode_pembayaran' => $request->metode_pembayaran ?? 'TUNAI',
-            'status_pembayaran' => 'LUNAS',
-        ]);
-
-        // 6. Update Status TV jadi Booked
-        $tv->update(['status' => 'booked']);
-
-        return response()->json([
-            'message' => 'Transaksi berhasil & TV aktif',
-            'data' => $transaksi
-        ], 201);
+    // Cek apakah TV sudah disewa
+    if ($tv->status !== 'available') {
+        return response()->json(['message' => 'TV tidak tersedia'], 409);
     }
+
+    // Ambil paket sewa berdasarkan id_paket
+    $paket = PaketSewa::find($request->id_paket);
+
+    // Cek apakah paket ditemukan
+    if (!$paket) {
+        return response()->json(['message' => 'Paket tidak ditemukan'], 404);
+    }
+
+    // Hitung rental_end_time berdasarkan waktu sekarang dan durasi sewa
+    $rentalEndTime = Carbon::now()->addMinutes($paket->durasi_menit);  // Durasi sewa dalam menit
+
+    // Menghitung total tagihan dan uang kembalian
+    $totalTagihan = $paket->harga;
+    $uangKembalian = $request->uang_bayar - $totalTagihan;
+
+    // Validasi uang pembayaran
+    if ($uangKembalian < 0) {
+        return response()->json(['message' => 'Uang pembayaran kurang!', 'kurang' => abs($uangKembalian)], 400);
+    }
+
+    // Simpan transaksi
+    $transaksi = Transaksi::create([
+        'tv_id'          => $tv->id,
+        'id_paket'       => $paket->id_paket,
+        'nama_penyewa'   => $request->nama_penyewa,
+        'total_tagihan'  => $totalTagihan,
+        'uang_bayar'     => $request->uang_bayar,
+        'uang_kembalian' => $uangKembalian,
+        'metode_pembayaran' => $request->metode_pembayaran,
+        'status_pembayaran' => 'LUNAS',
+    ]);
+
+    // Perbarui status TV menjadi 'booked' dan set rental_end_time
+    $tv->update([
+        'status' => 'booked',
+        'rental_end_time' => $rentalEndTime  // Set waktu berakhirnya penyewaan
+    ]);
+
+    // Kirim respons sukses
+    return response()->json([
+        'message' => 'Transaksi berhasil',
+        'data' => $transaksi
+    ], 201);
+}
+
+
+
 
     /**
      * GET: Ambil Detail 1 Transaksi (Untuk Halaman Struk/Detail)

@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     // Pastikan URL sudah HTTPS (Aman)
-    public static final String BASE_URL = "https://mobile.theputras.my.id/";
+    public static final String BASE_URL = "http://172.16.2.46/api/";
 
     private static Retrofit retrofit = null;
 

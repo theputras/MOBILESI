@@ -21,6 +21,7 @@ return new class extends Migration
               ->onDelete('cascade'); 
         
         $table->enum('status', ['available', 'booked', 'maintenance'])->default('available');
+        $table->timestamp('rental_end_time')->nullable();
         $table->timestamps();
     });
 }

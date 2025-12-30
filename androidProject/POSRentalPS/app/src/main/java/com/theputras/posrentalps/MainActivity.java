@@ -2,6 +2,7 @@ package com.theputras.posrentalps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -176,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
             if (isExist) {
                 Toast.makeText(this, "TV ini sudah ada di keranjang!", Toast.LENGTH_SHORT).show();
             } else {
+                Log.d("CHECK_ID", "TV yang diklik: " + tv.getNomorTv() + " ID-nya: " + tv.getId());
                 // 2. LANGSUNG ADD TO CART (Tanpa Qty Dialog)
                 TransactionRequest req = new TransactionRequest(
                         "Guest", // Default nama sementara

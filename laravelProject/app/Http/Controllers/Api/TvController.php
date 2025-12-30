@@ -4,7 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tv;
+use App\Models\Transaksi;
+use App\Models\PaketSewa;
 use Illuminate\Http\Request;
+use App\Events\RentalStarted;
+use Carbon\Carbon;
+
+
 
 class TvController extends Controller
 {
@@ -16,24 +22,50 @@ class TvController extends Controller
      * Mengambil daftar TV yang AVAILABLE saja.
      * Method: GET /api/tvs/available
      */
-    public function getAvailableTvs(Request $request)
-    {
-        // Query data TV + relasi jenis console + filter status available
-        $query = Tv::with('jenisConsole')->where('status', 'available');
+public function getAvailableTvs()
+{
+    // Cari TV yang statusnya 'available'
+    $tvs = Tv::where('status', 'available')
+             ->select('id', 'nomor_tv', 'status', 'rental_end_time')  // Pilih kolom yang dibutuhkan
+             ->get();
 
-        // Filter opsional by console (misal kasir cuma mau liat PS5)
-        if ($request->has('id_console')) {
-            $query->where('id_console', $request->id_console);
-        }
+    return response()->json([
+        'success' => true,
+        'message' => 'List TV Available',
+        'data'    => $tvs
+    ], 200);
+}
 
-        $tvs = $query->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List TV Available',
-            'data'    => $tvs
-        ], 200);
-    }
+public function getBookedTvs()
+{
+    // Cari TV yang statusnya 'booked'
+    $tvs = Tv::where('status', 'booked')
+             ->select('id', 'nomor_tv', 'status', 'rental_end_time')  // Pilih kolom yang dibutuhkan
+             ->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'List TV Booked dan Durasi Sewa',
+        'data'    => $tvs
+    ], 200);
+}
+
+
+public function getMaintenanceTvs()
+{
+    // Cari TV yang statusnya 'maintenance'
+    $tvs = Tv::where('status', 'maintenance')
+             ->select('id', 'nomor_tv', 'status', 'rental_end_time')  // Pilih kolom yang dibutuhkan
+             ->get();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'List TV Maintenance',
+        'data'    => $tvs
+    ], 200);
+}
+
 
     // ==========================================
     // BAGIAN 2: CRUD UNTUK ADMIN (MANAJEMEN TV)
@@ -60,24 +92,39 @@ class TvController extends Controller
      * Method: POST /api/tvs
      */
     public function store(Request $request)
-    {
-        $validator = $request->validate([
-            'nomor_tv'   => 'required|unique:tvs,nomor_tv',
-            'id_console' => 'required|exists:jenis_console,id_console',
-        ]);
+{
+    $validator = $request->validate([
+        'nomor_tv'   => 'required|exists:tvs,nomor_tv',
+        'id_console' => 'required|exists:jenis_console,id_console',
+        'id_paket'   => 'required|exists:paket_sewa,id_paket',
+    ]);
 
-        $tv = Tv::create([
-            'nomor_tv'   => $request->nomor_tv,
-            'id_console' => $request->id_console,
-            'status'     => 'available', // Default available
+    // Ambil TV berdasarkan nomor_tv
+    $tv = Tv::where('nomor_tv', $request->nomor_tv)->first();
+
+    if ($tv && $tv->status == 'available') {
+        // Ambil paket sewa
+        $paket = PaketSewa::findOrFail($request->id_paket);
+
+        // Hitung waktu selesai sewa
+        $rentalEndTime = Carbon::now()->addMinutes($paket->durasi_menit);  // Waktu sewa berakhir berdasarkan durasi paket
+
+        // Update status TV dan waktu sewa berakhir
+        $tv->update([
+            'status' => 'booked',
+            'rental_end_time' => $rentalEndTime,  // Menyimpan waktu selesai sewa
         ]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'TV berhasil ditambahkan',
-            'data'    => $tv
-        ], 201); // 201 = Created
+            'message' => 'TV berhasil disewa',
+            'data' => $tv
+        ], 201);
     }
+
+    return response()->json(['message' => 'TV tidak tersedia'], 400);
+}
+
+
 
     /**
      * Update Data TV (Misal: Ganti status jadi maintenance, atau ganti console)
@@ -127,4 +174,9 @@ class TvController extends Controller
             'data'    => $tv
         ], 200);
     }
+
+
+
+
+
 }
