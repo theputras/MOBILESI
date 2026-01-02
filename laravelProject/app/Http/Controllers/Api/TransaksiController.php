@@ -103,7 +103,7 @@ public function store(Request $request)
      */
     public function show($id)
     {
-        $transaksi = Transaksi::with('console')->find($id);
+        $transaksi = Transaksi::with(['tv.jenisConsole'])->find($id);
 
         if (!$transaksi) {
             return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
