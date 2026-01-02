@@ -18,7 +18,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private final CartListener listener;
 
     public interface CartListener {
-        void onCartUpdated();
+        void onDeleteClick(int position);
+//        void onCartUpdated();
     }
 
     public CartAdapter(List<CartManager.CartDisplay> list, CartListener listener) {
@@ -41,16 +42,25 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         holder.tvName.setText(item.displayName);
         holder.tvPrice.setText("Rp " + item.price);
-
-        // Hanya Logic Hapus
         holder.btnDelete.setOnClickListener(v -> {
             CartManager.getInstance().removeItem(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, list.size());
-
-            // Beritahu Activity untuk update total harga
-            if (listener != null) listener.onCartUpdated();
+            // Gunakan holder.getAdapterPosition() untuk posisi yang akurat saat animasi hapus
+            if (listener != null) {
+                listener.onDeleteClick(holder.getAdapterPosition());
+//                listener.onCartUpdated();
+            }
         });
+//        // Hanya Logic Hapus
+//        holder.btnDelete.setOnClickListener(v -> {
+//            CartManager.getInstance().removeItem(position);
+//            notifyItemRemoved(position);
+//            notifyItemRangeChanged(position, list.size());
+//
+//            // Beritahu Activity untuk update total harga
+//            if (listener != null) listener.onCartUpdated();
+//        });
     }
 
     @Override

@@ -34,12 +34,13 @@ public class PaketAdapter extends RecyclerView.Adapter<PaketAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PaketSewa item = list.get(position);
-        holder.tvName.setText(item.namaPaket);
-        holder.tvPrice.setText("Rp " + item.harga);
-        holder.tvDuration.setText(item.durasiMenit + " Menit");
+        PaketSewa paket = list.get(position);
 
-        holder.itemView.setOnClickListener(v -> listener.onPaketClick(item));
+        // ID-nya harus sesuai item_paket.xml di atas
+        holder.tvNama.setText(paket.namaPaket);
+        holder.tvHarga.setText("Rp " + String.format("%,d", paket.harga));
+
+        holder.itemView.setOnClickListener(v -> listener.onPaketClick(paket));
     }
 
     @Override
@@ -48,12 +49,13 @@ public class PaketAdapter extends RecyclerView.Adapter<PaketAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvName, tvPrice, tvDuration;
+        TextView tvNama, tvHarga;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = itemView.findViewById(R.id.tvPaketName);
-            tvPrice = itemView.findViewById(R.id.tvPaketPrice);
-            tvDuration = itemView.findViewById(R.id.tvPaketDuration);
+            // Pastikan ID ini ada di item_paket.xml
+            tvNama = itemView.findViewById(R.id.tvNamaPaket);
+            tvHarga = itemView.findViewById(R.id.tvHargaPaket);
         }
     }
 }

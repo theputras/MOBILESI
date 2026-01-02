@@ -1,51 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/white_smoke"
+    android:fitsSystemWindows="true">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerTvGrid"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_height="match_parent"/>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabCart"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/nav_card_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="32dp"
-        android:text="Bayar"
-        android:textColor="@color/white"
-        android:elevation="10dp"
-        app:elevation="10dp"
-        app:icon="@mipmap/ic_launcher"
-        app:iconTint="@color/white"
-        app:backgroundTint="@color/primary_orange"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_height="64dp"
 
-    <TextView
-        android:id="@+id/tvCartCount"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:text="0"
-        android:background="@drawable/bg_circle_red"
-        android:textColor="#FFF"
-        android:gravity="center"
-        android:textSize="12sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginHorizontal="24dp"
 
-        android:elevation="12dp"
-        android:translationZ="12dp"
-        android:visibility="gone"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="15dp"
+        app:cardBackgroundColor="#CCF1F3E0"
+        app:strokeWidth="1dp"
+        app:strokeColor="#80FFFFFF">
 
-        app:layout_constraintTop_toTopOf="@id/fabCart"
-        app:layout_constraintEnd_toEndOf="@id/fabCart"
-        android:layout_marginTop="-10dp"
-        android:layout_marginEnd="-5dp"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+
+            app:menu="@menu/menu_bottom_nav"
+            app:labelVisibilityMode="selected"
+
+            app:itemIconTint="@color/selector_nav_item"
+            app:itemTextColor="@color/selector_nav_item"
+            app:itemRippleColor="@android:color/transparent"
+
+            app:itemIconSize="22dp"
+
+            app:itemPaddingTop="14dp"
+            app:itemPaddingBottom="0dp"
+
+            app:minWidth="0dp"
+            app:elevation="0dp"
+
+            app:itemBackground="@drawable/bg_nav_pill_selector"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>

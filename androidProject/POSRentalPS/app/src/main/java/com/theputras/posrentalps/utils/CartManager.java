@@ -56,6 +56,7 @@ public class CartManager {
 
     // Hapus item berdasarkan index
     public void removeItem(int position) {
+        // Ganti 'cartList' menjadi 'displayList'
         if (position >= 0 && position < displayItems.size()) {
             displayItems.remove(position);
         }

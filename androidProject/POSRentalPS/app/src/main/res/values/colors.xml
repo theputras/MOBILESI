@@ -1,11 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#1F1F1F</color>
-    <color name="white">#FFFFFF</color>
-    <color name="bg_light">#F5F6FA</color>
-    <color name="primary_orange">#FF9800</color> <color name="text_grey">#9E9E9E</color>
-    <color name="green_avail">#4CAF50</color>
-    <color name="red_busy">#F44336</color>
-    <color name="bg_circle_red">#990000</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="sage_dark">#778873</color>
+
+    <color name="sage_medium">#A1BC98</color>
+
+    <color name="sage_light">#D2DCB6</color>
+
+    <color name="cream_base">#F1F3E0</color>
+
+
+    <color name="primary_brand">@color/sage_dark</color>
+    <color name="primary_variant">@color/sage_medium</color>
+    <color name="primary_soft">@color/sage_light</color>
+
+    <color name="bg_light">@color/cream_base</color>
+    <color name="white_smoke">@color/cream_base</color>
+    <color name="white">#FFFFFF</color> <color name="black">#1D1D1F</color>
+
+    <color name="text_primary">@color/sage_dark</color> <color name="text_grey">#757575</color>
+    <color name="text_light_grey">#BDBDBD</color>
+
+    <color name="green_avail">#34C759</color>
+    <color name="red_busy">#FF3B30</color>
+    <color name="gray_maintenance">#8E8E93</color>
+    <color name="red_light">#FFEBEE</color>
+    <color name="gray_light">#F2F2F7</color>
+    <color name="bg_circle_red">#FF3B30</color>
+
+    <color name="primary_orange">@color/primary_brand</color>
+    <color name="design_default_color_primary">@color/primary_brand</color>
+
+    <color name="blue_soft">@color/sage_light</color>
+    <color name="blue_dark">@color/sage_dark</color>
+
+    <color name="purple_200">@color/sage_light</color>
+    <color name="purple_500">@color/sage_medium</color>
+    <color name="purple_700">@color/sage_dark</color>
+    <color name="teal_200">@color/sage_medium</color>
+    <color name="teal_700">@color/sage_dark</color>
 </resources>

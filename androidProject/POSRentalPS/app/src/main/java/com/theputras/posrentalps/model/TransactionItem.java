@@ -9,13 +9,13 @@ public class TransactionItem {
     @SerializedName("nama_penyewa")
     public String namaPenyewa;
 
-    @SerializedName("nomor_tv")
+    @SerializedName("tv_id")
     public String nomorTv;
 
     @SerializedName("total_tagihan")
     public int totalTagihan;
 
-    @SerializedName("durasi_jam")
+    @SerializedName("id_paket")
     public int durasiJam;
 
     @SerializedName("tanggal_transaksi")

@@ -39,7 +39,7 @@ public class PaymentActivity extends AppCompatActivity {
     private int processedCount = 0;
     private int totalRequestQueue = 0;
     private boolean hasError = false;
-
+    private CartAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +61,22 @@ public class PaymentActivity extends AppCompatActivity {
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         // Pass listener "this::updateTotalUI" atau lambda
-        CartAdapter adapter = new CartAdapter(CartManager.getInstance().getDisplayList(), new CartAdapter.CartListener() {
+        adapter = new CartAdapter(CartManager.getInstance().getDisplayList(), new CartAdapter.CartListener() {
             @Override
-            public void onCartUpdated() {
-                // Panggil fungsi hitung ulang setiap kali ada perubahan di item
+            public void onDeleteClick(int position) {
+                // 1. Hapus data dari manager
+                CartManager.getInstance().removeItem(position);
+
+                // 2. Beritahu adapter ada yang hilang
+                adapter.notifyItemRemoved(position);
+
+                // 3. HITUNG ULANG TOTAL DI SINI (Pengganti onCartUpdated)
                 refreshTotal();
+
+                // Cek kalau kosong, tutup activity
+                if (CartManager.getInstance().getDisplayList().isEmpty()) {
+                    finish();
+                }
             }
         });
 

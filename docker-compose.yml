@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravelproject-app
+    ports:
+      - "60600:60600"
+    volumes:
+      - ./:/var/www
+    env_file:
+      - .env
+    networks:
+      - default
+
+# HAPUS BAGIAN 'command:' KARENA SUDAH ADA DI DOCKERFILE
+
+networks:
+  default:
+    name: laravelproject_default
+    driver: bridge
