@@ -2,6 +2,7 @@ package com.theputras.posrentalps.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,15 +72,22 @@ public class TvGridAdapter extends RecyclerView.Adapter<TvGridAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Tv tv = tvList.get(position);
-
+        String namaConsole = "NULL";
         // 1. Data TV
         holder.tvNomor.setText(tv.getNomorTv());
-        if (tv.getJenisConsole() != null) {
-            holder.tvConsole.setText(tv.getJenisConsole().getNamaConsole());
+        if (tv.jenisConsole != null && tv.jenisConsole.namaConsole != null) {
+            // HAPUS TANDA KURUNG () DI BELAKANG namaConsole
+            holder.tvConsole.setText(tv.jenisConsole.namaConsole);
         } else {
             holder.tvConsole.setText("-");
         }
-
+        Log.d("CEK_TV_ADAPTER", "--------------------------------------------------");
+        Log.d("CEK_TV_ADAPTER", "Posisi: " + position);
+        Log.d("CEK_TV_ADAPTER", "Nomor TV: " + tv.nomorTv);
+        Log.d("CEK_TV_ADAPTER", "Status TV: " + tv.status);
+//        Log.d("CEK_TV_ADAPTER", "Objek Console: " + statusConsole);
+        Log.d("CEK_TV_ADAPTER", "Nama Console: " + namaConsole);
+        Log.d("CEK_TV_ADAPTER", "--------------------------------------------------");
         String status = (tv.getStatus() != null) ? tv.getStatus().toLowerCase() : "available";
 
         // 2. Cek apakah TV ini ada di Cart?

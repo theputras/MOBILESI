@@ -38,27 +38,26 @@ public class StrukActivity extends AppCompatActivity {
         String historyTv = getIntent().getStringExtra("NOMOR_TV");
         int historyDurasi = getIntent().getIntExtra("DURASI", 0);
         int cashGiven = getIntent().getIntExtra("CASH_GIVEN", 0);
-
+        String nomorTv = getIntent().getStringExtra("NOMOR_TV");
+        String namaConsole = getIntent().getStringExtra("NAMA_CONSOLE");
         // 1. SET NAMA
         tvName.setText(custName != null ? custName : "Guest");
 
         // 2. LOGIC CERDAS (HISTORY vs TRANSAKSI BARU)
         if (historyTotal > 0) {
-            // === MODE HISTORY ===
-            // Pakai Tanggal History
             tvDate.setText(historyDate != null ? historyDate : "-");
 
-//            // Tampilkan Item Manual (Karena Cart Kosong/Tidak Boleh Disentuh)
-//            String deskripsi = "Sewa TV " + (historyTv != null ? historyTv : "-") + " (" + historyDurasi + " Jam)";
-//            addItemToStruk(container, deskripsi, historyTotal);
+            // Format Tampilan Item: "TV 02 - PlayStation 5"
+            String deskripsi = (nomorTv != null ? nomorTv : "");
+            if (namaConsole != null && !namaConsole.isEmpty()) {
+                deskripsi += " - " + namaConsole;
+            }
 
-            // Set Harga
+            addItemToStruk(container, deskripsi, historyTotal);
+
             tvTotal.setText(String.format("Rp %,d", historyTotal));
-            tvCash.setText(String.format("Rp %,d", historyTotal)); // Asumsi Lunas
+            tvCash.setText(String.format("Rp %,d", historyTotal));
             tvChange.setText("Rp 0");
-
-            // PENTING: JANGAN CLEAR CART DI SINI! BIAR KASIR GA NGAMUK.
-
         } else {
             // === MODE TRANSAKSI BARU ===
             // Pakai Tanggal Sekarang

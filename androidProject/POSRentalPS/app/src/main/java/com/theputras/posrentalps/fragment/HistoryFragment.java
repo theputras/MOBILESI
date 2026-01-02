@@ -107,7 +107,7 @@ public class HistoryFragment extends Fragment {
                         // Gunakan Adapter dengan Interface Klik
                         adapter = new HistoryAdapter(requireContext(), data, item -> {
                             // Saat item diklik, jalankan fungsi hack ini
-                            openStrukWithHack(item);
+                            openSafeStruk(item);
                         });
                         recyclerHistory.setAdapter(adapter);
                     }
@@ -125,30 +125,27 @@ public class HistoryFragment extends Fragment {
     }
 
     // --- INI TRIK SULAPNYA (YANG DIPERBAIKI STRINGNYA) ---
-    private void openStrukWithHack(TransactionItem item) {
-        // 1. Bersihkan Cart Manager (biar item lama hilang)
-        CartManager.getInstance().clear();
-
-        // 2. Bikin Nama Item sesuai format HomeFragment: "TV [No] - [Paket]"
-        // Asumsi: item.durasiJam bisa kita ubah jadi string paket "1 Jam", "2 Jam", dst.
-
-        String nomorTv = (item.nomorTv != null) ? item.nomorTv : "-";
-        String namaPaket = item.durasiJam + " Jam";
-
-        // FORMAT FINAL: "TV 1 - 1 Jam"
-        String displayName = "TV " + nomorTv + " - " + namaPaket;
-
-        // 3. Masukkan ke Cart sebagai item palsu
-        TransactionRequest dummyReq = new TransactionRequest("Guest", 0, 0, item.totalTagihan);
-        CartManager.getInstance().addItem(dummyReq, displayName, item.totalTagihan, 1);
-
-        // 4. Buka StrukActivity
+    private void openSafeStruk(TransactionItem item) {
         Intent intent = new Intent(requireContext(), StrukActivity.class);
 
-        // Kirim data tambahan (Tanggal asli dari history)
+        // Ambil Data TV & Console
+        String nomorTv = item.getDisplayTv(); // Pakai helper yang tadi dibuat
+        String namaConsole = item.getDisplayConsole();
+
+        // Kirim Data Lewat Intent
         intent.putExtra("CUSTOMER_NAME", item.namaPenyewa);
-        intent.putExtra("CASH_GIVEN", item.totalTagihan); // Dianggap Uang Pas
-        intent.putExtra("TANGGAL", item.tanggalTransaksi); // Kirim tanggal history
+        intent.putExtra("TOTAL_TAGIHAN", item.totalTagihan);
+        intent.putExtra("TANGGAL", item.tanggalTransaksi);
+        intent.putExtra("INVOICE_ID", "#INV-" + item.idTransaksi);
+
+        // Kirim Nomor TV & Console untuk ditampilkan di Struk
+        // StrukActivity akan merakitnya jadi: "Sewa TV [No] ([Console])"
+        intent.putExtra("NOMOR_TV", nomorTv);
+
+        // Kita bisa kirim nama console sebagai info durasi/paket sementara
+        // atau biarkan StrukActivity yang format
+        // (Di sini saya kirim nama console agar jelas)
+        intent.putExtra("NAMA_CONSOLE", namaConsole);
 
         startActivity(intent);
     }
