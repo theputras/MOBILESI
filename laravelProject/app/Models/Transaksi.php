@@ -36,9 +36,12 @@ class Transaksi extends Model
     }
 
     // --- MAGIC ACCESSOR: Ini yang bikin field "console" terisi ---
-    public function getConsoleAttribute()
+public function getConsoleAttribute()
     {
-        // Cek apakah ada data TV, lalu ambil relasi jenisConsole dari TV
-        return $this->tv ? $this->tv->jenisConsole : null;
+        // Jika TV ada DAN relasi jenisConsole ada, kembalikan datanya
+        if ($this->tv && $this->tv->jenisConsole) {
+            return $this->tv->jenisConsole;
+        }
+        return null;
     }
 }
