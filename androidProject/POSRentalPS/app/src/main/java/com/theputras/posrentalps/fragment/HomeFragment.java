@@ -370,32 +370,40 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void processTransaction(String namaPenyewa, int cashGiven, BottomSheetDialog dialog) {
+    // Perhatikan parameter ke-3: String metode
+    private void processTransaction(String namaPenyewa, int cashGiven, String metode, BottomSheetDialog dialog) {
+
         List<CartManager.CartDisplay> items = new ArrayList<>(CartManager.getInstance().getDisplayList());
         if (items.isEmpty()) return;
 
-        // Total item yang harus diproses
         final int totalItems = items.size();
         final int[] processedCount = {0}; // Counter sukses
 
         // Loop semua item di keranjang
         for (CartManager.CartDisplay item : items) {
 
-            // Update nama & uang di request masing-masing item
+            // 1. Update data request per item
             item.request.namaPenyewa = namaPenyewa;
-            // Tips: Uang bayar bisa dibagi rata atau diset full di item pertama,
-            // tapi paling aman diset sesuai harga item biar lunas per item.
-            // Atau kalau API support 'uang_bayar' global, kirim cashGiven.
-            // Disini kita asumsi backend hitung kembalian per transaksi.
-            item.request.uangBayar = item.price;
+            item.request.uangBayar = item.price; // Anggap lunas per item (atau sesuaikan logika backend)
 
+            // 2. MASUKKAN METODE PEMBAYARAN (PENTING!)
+            item.request.metodePembayaran = metode;
+
+            // Jika di TransactionRequest nama fieldnya beda (misal: paymentMethod), sesuaikan ya.
+            // Cek file TransactionRequest.java kamu.
+
+            // 3. Kirim ke API
             ApiClient.getClient().create(ApiService.class).saveTransaction(item.request).enqueue(new Callback<ApiResponse<TransactionItem>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<TransactionItem>> call, Response<ApiResponse<TransactionItem>> response) {
-                    // Tambah counter setiap selesai request
                     processedCount[0]++;
 
-                    // Cek jika semua item sudah diproses
+                    // Cek error backend
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(requireContext(), "Gagal: " + response.message(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Jika semua sudah diproses (sukses/gagal), pindah halaman
                     if (processedCount[0] == totalItems) {
                         finishAllTransactions(namaPenyewa, cashGiven, dialog);
                     }
@@ -404,9 +412,8 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onFailure(Call<ApiResponse<TransactionItem>> c, Throwable t) {
                     processedCount[0]++;
-                    Toast.makeText(requireContext(), "Gagal 1 Item: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Error Koneksi Item ke-" + processedCount[0], Toast.LENGTH_SHORT).show();
 
-                    // Tetap lanjut finish jika ini item terakhir
                     if (processedCount[0] == totalItems) {
                         finishAllTransactions(namaPenyewa, cashGiven, dialog);
                     }

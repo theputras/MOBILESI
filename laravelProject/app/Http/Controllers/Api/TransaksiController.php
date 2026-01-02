@@ -18,7 +18,7 @@ class TransaksiController extends Controller
     public function index()
     {
         // Ambil data, urutkan dari yang terbaru, dan sertakan info console-nya
-        $transaksi = Transaksi::with('console')
+        $transaksi = Transaksi::with(['tv.jenisConsole'])
                     ->orderBy('tanggal_transaksi', 'desc')
                     ->get();
         
