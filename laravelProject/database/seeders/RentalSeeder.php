@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tv;
+use App\Models\JenisConsole;
 
 class RentalSeeder extends Seeder
 {
@@ -53,6 +55,15 @@ class RentalSeeder extends Seeder
             ['id_console' => 2, 'nama_paket' => '5 Jam',    'durasi_menit' => 300, 'harga' => 132000, 'created_at' => now(), 'updated_at' => now()],
         ];
 
+        // 1. Buat Console Baru
+    $switch = JenisConsole::create([
+        'nama_console' => 'Nintendo Switch'
+    ]);
+
+    $ps4Racing = JenisConsole::create([
+        'nama_console' => 'PS4 + Steering Wheel'
+    ]);
+
         DB::table('paket_sewa')->insert($pakets);
 
 
@@ -97,7 +108,26 @@ class RentalSeeder extends Seeder
                 'created_at' => now(), 'updated_at' => now()
             ],
             
+            
         ];
+        // 2. Tambah 10 TV (Looping)
+    // TV 11 sampai 15 (Switch)
+    for ($i = 11; $i <= 15; $i++) {
+        Tv::create([
+            'nomor_tv'   => 'TV ' . $i,
+            'id_console' => $switch->id_console, // Otomatis ambil ID yang benar
+            'status'     => 'available'
+        ]);
+    }
+
+    // TV 16 sampai 20 (PS4 Racing)
+    for ($i = 16; $i <= 20; $i++) {
+        Tv::create([
+            'nomor_tv'   => 'TV ' . $i,
+            'id_console' => $ps4Racing->id_console, // Otomatis ambil ID yang benar
+            'status'     => 'available'
+        ]);
+    }
 
         DB::table('tvs')->insert($tvs);
     }

@@ -1,0 +1,31 @@
+====== Prompt untuk AI ======
+
+Oke, ini ada beberapa folder yang aku kirim
+
+Frontend (android java): POSRentalPS
+
+Backend (laravel): app, database, routes
+
+
+Nahh, rules nya
+
+1. Jangan ngerubah backend, kalo emang lu nyuruh ngerubah. Kasi alasan yang jelas dan di bold
+
+2. Ini di frontend nya alias di koding android java nya, Jangan ngerubah file yang ada di folder api, model, dan file apiresponse. Sama kaya nomor 1, kasi alasan yang jelas dan di bold mengapa harus di ganti
+
+3. Kalo misal lu nyuruh ganti, kasih gua penjelasan dulu. Baru pas aku acc atau setuju sama pendapat lu, baru lu langsung gas atur kodingnya 
+
+
+ oke, sekarang masuk ke poin errornya
+
+
+Ini errornya di proses checkout, ui nya pake layout_cart_bottom_sheet.xml okeyy
+
+
+INi errornya di layar cuma "Gagal: Unknown
+
+
+Itu dulu aja, fokus ke itu dulu
+
+
+Oiya, ini kan ada nanti ujungnya dengan cetak struk yang di res activity_struk. nahh, ini digabung sama yang di riwayat pemesanan atau histori. Dia pas di pencet item di history nya, dia akan munculin menu struknya juga. Jadi, hati-hati oke 

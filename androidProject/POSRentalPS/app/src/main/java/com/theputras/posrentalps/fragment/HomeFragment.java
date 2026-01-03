@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +54,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.os.Handler; // Jangan lupa import ini
+import android.os.Looper;
 
 public class HomeFragment extends Fragment {
 
@@ -60,6 +64,10 @@ public class HomeFragment extends Fragment {
     private TvGridAdapter adapter;
     private List<Tv> tvList = new ArrayList<>();
     private List<Tv> filteredList = new ArrayList<>();
+    private Handler searchHandler = new Handler(Looper.getMainLooper());
+    private Runnable searchRunnable;
+    private LinearLayout layoutEmpty;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +81,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         apiService = ApiClient.getClient().create(ApiService.class);
-
+        layoutEmpty = view.findViewById(R.id.layoutEmptyHome);
         setupRecyclerView();
         setupSearch();
         setupSwipeRefresh();
@@ -84,21 +92,43 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        binding.recyclerTvGrid.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        int spanCount = calculateSpanCount(340);
+        binding.recyclerTvGrid.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         adapter = new TvGridAdapter(requireContext(), filteredList, this::showPaketDialog);
         binding.recyclerTvGrid.setAdapter(adapter);
     }
+    private int calculateSpanCount(int columnWidthDp) {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
 
+        // Hitung berapa kolom yang muat
+        int noOfColumns = (int) (screenWidthDp / columnWidthDp + 0.5); // +0.5 buat pembulatan
+
+        // Pastikan minimal ada 2 kolom biar gak jelek kalau di HP super kecil
+        return Math.max(noOfColumns, 2);
+    }
     private void setupSearch() {
         binding.etSearchTv.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterTv(s.toString());
+                // Hapus antrian pencarian sebelumnya kalau user masih ngetik
+                if (searchRunnable != null) {
+                    searchHandler.removeCallbacks(searchRunnable);
+                }
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                // Buat tugas pencarian baru
+                searchRunnable = () -> {
+                    filterTv(s.toString());
+                };
+                // Tunda eksekusi selama 500ms (setengah detik)
+                searchHandler.postDelayed(searchRunnable, 500);
+            }
         });
     }
 
@@ -149,6 +179,14 @@ public class HomeFragment extends Fragment {
             }
         }
         if (adapter != null) adapter.notifyDataSetChanged();
+        // --- LOGIC TAMPILKAN EMPTY STATE ---
+        if (filteredList.isEmpty()) {
+            binding.recyclerTvGrid.setVisibility(View.GONE);
+            layoutEmpty.setVisibility(View.VISIBLE);
+        } else {
+            binding.recyclerTvGrid.setVisibility(View.VISIBLE);
+            layoutEmpty.setVisibility(View.GONE);
+        }
     }
 
     private void showPaketDialog(Tv tv) {
@@ -157,46 +195,61 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme); // Pastikan theme ada atau hapus param ke-2 kalau error
         View dialogView = getLayoutInflater().inflate(R.layout.layout_pilih_paket, null);
         dialog.setContentView(dialogView);
 
         RecyclerView recyclerPaket = dialogView.findViewById(R.id.recyclerPaket);
-        recyclerPaket.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
+        // Setup Grid Layout (Sesuai request sebelumnya 3 kolom atau otomatis)
+        int spanCount = calculateSpanCount(340); // Pakai helper yang tadi dibuat
+        recyclerPaket.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+
+        // --- TAMBAHKAN LOGIC FULL SCREEN DISINI ---
+        dialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            if (bottomSheet != null) {
+                // 1. Paksa Tingginya Full Layar
+                bottomSheet.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+                // 2. Setup Behavior
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+
+                // Langsung mentok ke atas (EXPANDED)
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                // Mencegah user menutup dengan swipe ke bawah (Opsional, kalau mau maksa tombol close)
+                behavior.setSkipCollapsed(true);
+            }
+        });
+        // ------------------------------------------
+
+        // API Call untuk ambil paket
         apiService.getPakets().enqueue(new Callback<List<PaketSewa>>() {
             @Override
             public void onResponse(Call<List<PaketSewa>> call, Response<List<PaketSewa>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-
-                    // 1. Definisikan variabel 'allPakets' dari response server
                     List<PaketSewa> allPakets = response.body();
                     List<PaketSewa> filteredPakets = new ArrayList<>();
 
-                    // 2. Ambil ID Console dari TV (Pakai akses langsung field .idConsole)
+                    // Filter Paket Sesuai Console TV
                     int targetConsoleId = 0;
                     if (tv.getJenisConsole() != null) {
-                        // FIX: Langsung panggil .idConsole (karena di model public dan gak ada getter)
                         targetConsoleId = tv.getJenisConsole().idConsole;
                     }
 
-                    // 3. Filter Paket
                     for (PaketSewa p : allPakets) {
-                        // Masukkan paket yang ID Console-nya SAMA
                         if (p.idConsole == targetConsoleId) {
                             filteredPakets.add(p);
                         }
                     }
 
-                    // 4. Sorting (Urutkan dari durasi terpendek)
-                    Collections.sort(filteredPakets, new Comparator<PaketSewa>() {
-                        @Override
-                        public int compare(PaketSewa p1, PaketSewa p2) {
-                            return Integer.compare(p1.durasiMenit, p2.durasiMenit);
-                        }
-                    });
+                    // Sorting Paket (Menit terendah ke tertinggi)
+                    Collections.sort(filteredPakets, (p1, p2) -> Integer.compare(p1.durasiMenit, p2.durasiMenit));
 
-                    // 5. Masukkan list yang SUDAH DI-FILTER ke Adapter
+                    // Pasang Adapter
                     PaketAdapter paketAdapter = new PaketAdapter(filteredPakets, selectedPaket -> {
                         addToCart(tv, selectedPaket);
                         dialog.dismiss();

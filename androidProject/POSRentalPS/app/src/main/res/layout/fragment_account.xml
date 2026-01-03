@@ -64,7 +64,74 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp"/>
+            <LinearLayout
+                android:id="@+id/btnPrinterSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingVertical="12dp">
 
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_agenda"
+                    app:tint="#555"/>
+
+                <TextView
+                    android:id="@+id/tvPrinterStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:text="Atur Printer Thermal"
+                    android:textSize="16sp"
+                    android:textColor="#333"/>
+
+                <TextView
+                    android:id="@+id/tvConnectedDevice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Belum Konek"
+                    android:textSize="12sp"
+                    android:textColor="#F44336"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnPaperSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingVertical="12dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_crop"
+                    app:tint="#555"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:text="Ukuran Kertas"
+                    android:textSize="16sp"
+                    android:textColor="#333"/>
+
+                <TextView
+                    android:id="@+id/tvPaperStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="58mm (Kecil)"
+                    android:textSize="12sp"
+                    android:textColor="#999"/>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
