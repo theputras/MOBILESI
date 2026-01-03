@@ -2,215 +2,195 @@ package com.theputras.posrentalps;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputLayout;
-import com.theputras.posrentalps.adapter.CartAdapter;
+
+// Imports
+import com.theputras.posrentalps.databinding.ActivityPaymentBinding;
 import com.theputras.posrentalps.api.ApiClient;
 import com.theputras.posrentalps.api.ApiService;
 import com.theputras.posrentalps.model.ApiResponse;
-import com.theputras.posrentalps.model.TransactionItem;
+import com.theputras.posrentalps.model.RiwayatTransaksi;
 import com.theputras.posrentalps.model.TransactionRequest;
 import com.theputras.posrentalps.utils.CartManager;
+import com.theputras.posrentalps.adapter.CartAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PaymentActivity extends AppCompatActivity {
 
-    private TextView tvTotal;
-    private EditText etCustName, etUangBayar;
-    private TextInputLayout inputLayoutUang;
-    private RadioGroup radioGroupPayment;
-    private RadioButton rbTunai, rbQris;
-    private MaterialButton btnConfirm;
-    private ProgressBar loading;
+    private ActivityPaymentBinding binding;
+    private ApiService apiService;
+    private CartAdapter cartAdapter;
 
-    // Variabel untuk melacak progress looping request
-    private int processedCount = 0;
-    private int totalRequestQueue = 0;
-    private boolean hasError = false;
-    private CartAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment);
 
-        // Binding Views
-        RecyclerView recycler = findViewById(R.id.recyclerCartItems);
-        tvTotal = findViewById(R.id.tvTotalBill);
-        etCustName = findViewById(R.id.etCustomerName);
-        etUangBayar = findViewById(R.id.etUangBayar);
-        inputLayoutUang = findViewById(R.id.inputLayoutUang);
-        radioGroupPayment = findViewById(R.id.radioGroupPayment);
-        rbTunai = findViewById(R.id.rbTunai);
-        rbQris = findViewById(R.id.rbQris);
-        btnConfirm = findViewById(R.id.btnProcessPayment);
-        loading = findViewById(R.id.progressBar);
+        binding = ActivityPaymentBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Setup RecyclerView
-        recycler.setLayoutManager(new LinearLayoutManager(this));
+        // Pastikan ApiClient logging aktif jika masih error
+        apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Pass listener "this::updateTotalUI" atau lambda
-        adapter = new CartAdapter(CartManager.getInstance().getDisplayList(), new CartAdapter.CartListener() {
-            @Override
-            public void onDeleteClick(int position) {
-                // 1. Hapus data dari manager
-                CartManager.getInstance().removeItem(position);
+        setupUI();
+    }
 
-                // 2. Beritahu adapter ada yang hilang
-                adapter.notifyItemRemoved(position);
+    private void setupUI() {
+        // 1. SETUP RECYCLER VIEW
+        binding.recyclerCart.setHasFixedSize(true);
+        binding.recyclerCart.setLayoutManager(new LinearLayoutManager(this));
 
-                // 3. HITUNG ULANG TOTAL DI SINI (Pengganti onCartUpdated)
-                refreshTotal();
+        List<CartManager.CartDisplay> items = CartManager.getInstance().getCartItems();
+        // Listener null karena di halaman payment mungkin item tidak bisa dihapus (read-only),
+        // atau kamu bisa buat listener baru jika ingin fitur hapus di sini.
+        cartAdapter = new CartAdapter(items, null);
+        binding.recyclerCart.setAdapter(cartAdapter);
 
-                // Cek kalau kosong, tutup activity
-                if (CartManager.getInstance().getDisplayList().isEmpty()) {
-                    finish();
-                }
-            }
-        });
-
-        recycler.setAdapter(adapter);
-
-        // Panggil pertama kali
-        refreshTotal();
-
-        // Tampilkan Total
+        // 2. SETUP TOTAL
         int total = CartManager.getInstance().getTotalPrice();
-        tvTotal.setText("Rp " + total);
+        binding.tvTotalCart.setText("Rp " + String.format("%,d", total).replace(',', '.'));
 
-        // Logic RadioButton (Sembunyikan Input Uang jika QRIS)
-        radioGroupPayment.setOnCheckedChangeListener((group, checkedId) -> {
+        // 3. LOGIC QRIS BYPASS
+        binding.rgPaymentMethod.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbQris) {
-                inputLayoutUang.setVisibility(View.GONE);
-                etUangBayar.setText(String.valueOf(total)); // Otomatis lunas
+                binding.etCash.setText(String.valueOf(total));
+                binding.etCash.setEnabled(false);
+                binding.etCash.setFocusable(false);
             } else {
-                inputLayoutUang.setVisibility(View.VISIBLE);
-                etUangBayar.setText("");
+                binding.etCash.setText("");
+                binding.etCash.setEnabled(true);
+                binding.etCash.setFocusableInTouchMode(true);
+                binding.etCash.requestFocus();
             }
         });
 
-        btnConfirm.setOnClickListener(v -> processCheckout(total));
+        // 4. TOMBOL BAYAR
+        binding.btnProcessPay.setOnClickListener(v -> prosesTransaksi());
     }
 
-    private void refreshTotal() {
-        int total = CartManager.getInstance().getTotalPrice();
-        tvTotal.setText("Rp " + total);
+    private void prosesTransaksi() {
+        String nama = binding.etNamaPenyewa.getText().toString().trim();
+        String uangBayarStr = binding.etCash.getText().toString().trim();
 
-        // Update juga nilai default QRIS kalau sedang terpilih
-        if (rbQris.isChecked()) {
-            etUangBayar.setText(String.valueOf(total));
-        }
-
-        // Kalau keranjang jadi kosong, bisa tutup activity (opsional)
-        if (CartManager.getInstance().getDisplayList().isEmpty()) {
-            Toast.makeText(this, "Keranjang kosong", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-    }
-    private void processCheckout(int grandTotal) {
-        String name = etCustName.getText().toString().trim();
-        String uangStr = etUangBayar.getText().toString().trim();
-
-        // 1. Validasi Input
-        if (name.isEmpty()) {
-            etCustName.setError("Nama wajib diisi");
+        if (TextUtils.isEmpty(nama)) {
+            binding.etNamaPenyewa.setError("Wajib diisi");
+            binding.etNamaPenyewa.requestFocus();
             return;
         }
 
-        int tempUangBayar = 0; // Ganti nama variabel lokal sementara
-        if (rbTunai.isChecked()) {
-            if (uangStr.isEmpty()) {
-                etUangBayar.setError("Masukkan nominal uang");
-                return;
-            }
-            tempUangBayar = Integer.parseInt(uangStr);
-            if (tempUangBayar < grandTotal) {
-                etUangBayar.setError("Uang kurang!");
-                return;
-            }
-        } else {
-            // Jika QRIS, anggap uang bayar pas sesuai tagihan
-            tempUangBayar = grandTotal;
+        if (TextUtils.isEmpty(uangBayarStr)) {
+            binding.etCash.setError("Isi nominal");
+            binding.etCash.requestFocus();
+            return;
         }
 
-        // --- SOLUSI ERROR ADA DISINI ---
-        // Buat variabel FINAL agar bisa dibaca di dalam Callback
-        final int finalUangBayar = tempUangBayar;
-        // -------------------------------
+        int uangBayar;
+        try {
+            uangBayar = Integer.parseInt(uangBayarStr);
+        } catch (NumberFormatException e) {
+            binding.etCash.setError("Format angka salah");
+            return;
+        }
 
-        // Mulai Proses ke Server
-        loading.setVisibility(View.VISIBLE);
-        btnConfirm.setEnabled(false);
-        hasError = false;
-        processedCount = 0;
+        int totalTagihan = CartManager.getInstance().getTotalPrice();
 
-        // 1. Queue sekarang berdasarkan jumlah item unik (setiap item harus beda TV)
-        totalRequestQueue = CartManager.getInstance().getDisplayList().size();
+        if (uangBayar < totalTagihan) {
+            Toast.makeText(this, "Uang kurang!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        ApiService api = ApiClient.getClient().create(ApiService.class);
+        String metodePembayaran = binding.rbQris.isChecked() ? "QRIS" : "TUNAI";
 
-        // 2. Looping kirim data per Item (Bukan per Qty)
-        for (CartManager.CartDisplay item : CartManager.getInstance().getDisplayList()) {
+        List<CartManager.CartDisplay> cartItems = CartManager.getInstance().getCartItems();
+        if (cartItems.isEmpty()) {
+            Toast.makeText(this, "Keranjang kosong!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            // Pastikan request object membawa data terbaru
-            item.request.namaPenyewa = name;
-            item.request.metodePembayaran = rbQris.isChecked() ? "QRIS" : "TUNAI";
-            item.request.uangBayar = item.price; // Harga per paket TV tersebut
-            android.util.Log.d("PAYMENT_DEBUG", "Mengirim TV ID: " + item.request.tvId);
-            // Kirim request satu per satu untuk setiap TV yang dipilih
-            api.saveTransaction(item.request).enqueue(new Callback<ApiResponse<TransactionItem>>() {
-                @Override
-                public void onResponse(Call<ApiResponse<TransactionItem>> call, Response<ApiResponse<TransactionItem>> response) {
-                    if (!response.isSuccessful()) {
-                        hasError = true;
-                        // Ambil pesan error asli dari Laravel (Contoh: "TV tidak tersedia")
-                        try {
-                            String errorMsg = response.errorBody().string();
-                            android.util.Log.e("API_ERROR", errorMsg);
-                        } catch (Exception e) { e.printStackTrace(); }
+        List<TransactionRequest.ItemDetail> itemsToSend = new ArrayList<>();
+        for (CartManager.CartDisplay cart : cartItems) {
+            // Validasi data null sebelum kirim
+            if (cart.getTv() != null && cart.getPaket() != null) {
+                itemsToSend.add(new TransactionRequest.ItemDetail(
+                        cart.getTv().getId(),
+                        cart.getPaket().idPaket
+                ));
+            }
+        }
+
+        TransactionRequest request = new TransactionRequest(
+                nama,
+                uangBayar,
+                metodePembayaran,
+                itemsToSend
+        );
+
+        setLoading(true);
+
+        apiService.saveTransaction(request).enqueue(new Callback<ApiResponse<RiwayatTransaksi>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<RiwayatTransaksi>> call, Response<ApiResponse<RiwayatTransaksi>> response) {
+                setLoading(false);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<RiwayatTransaksi> apiResponse = response.body();
+
+                    if (apiResponse.success) {
+                        Toast.makeText(PaymentActivity.this, "Sukses!", Toast.LENGTH_LONG).show();
+                        CartManager.getInstance().clearCart();
+
+                        if (apiResponse.data != null) {
+                            Intent intent = new Intent(PaymentActivity.this, StrukActivity.class);
+                            // ID ini harus sesuai dengan yang dikirim backend (sekarang id_transaksi)
+                            intent.putExtra("TRANSACTION_ID", apiResponse.data.getIdTransaksi());
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(PaymentActivity.this, "Sukses tapi data struk kosong", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        // FIX: Handle pesan null
+                        String msg = apiResponse.message != null ? apiResponse.message : "Gagal: Pesan tidak diketahui";
+                        Toast.makeText(PaymentActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
-                    checkComplete(name, finalUangBayar);
+                } else {
+                    // Jika error dari server (400/404/500)
+                    String errorMsg = "Error Server: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            // Mencoba membaca error body jika ada
+                            // errorMsg += " " + response.errorBody().string(); // Hati-hati ini bisa exception di main thread
+                        }
+                    } catch (Exception e) {}
+                    Toast.makeText(PaymentActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                @Override
-                public void onFailure(Call<ApiResponse<TransactionItem>> call, Throwable t) {
-                    hasError = true;
-                    checkComplete(name, finalUangBayar);
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<ApiResponse<RiwayatTransaksi>> call, Throwable t) {
+                setLoading(false);
+                Toast.makeText(PaymentActivity.this, "Koneksi Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    // Method sinkronisasi untuk cek apakah semua request sudah selesai
-    private synchronized void checkComplete(String customerName, int totalCashGiven) {
-        processedCount++;
-
-        // Jika semua request sudah diproses (sukses/gagal)
-        if (processedCount >= totalRequestQueue) {
-            loading.setVisibility(View.GONE);
-
-            if (!hasError) {
-                // Sukses
-                Intent intent = new Intent(PaymentActivity.this, StrukActivity.class);
-                intent.putExtra("CUSTOMER_NAME", customerName);
-                intent.putExtra("CASH_GIVEN", totalCashGiven); // Kirim uang total yang dikasih user
-                startActivity(intent);
-                finish();
-            } else {
-                btnConfirm.setEnabled(true);
-                Toast.makeText(this, "Ada kesalahan saat memproses transaksi", Toast.LENGTH_LONG).show();
-            }
+    private void setLoading(boolean isLoading) {
+        if (isLoading) {
+            binding.btnProcessPay.setText("MEMPROSES...");
+            binding.btnProcessPay.setEnabled(false);
+        } else {
+            binding.btnProcessPay.setText("BAYAR SEKARANG");
+            binding.btnProcessPay.setEnabled(true);
         }
     }
 }

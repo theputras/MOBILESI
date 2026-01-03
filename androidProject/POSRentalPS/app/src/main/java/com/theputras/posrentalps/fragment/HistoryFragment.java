@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +109,7 @@ public class HistoryFragment extends Fragment {
                         adapter = new HistoryAdapter(requireContext(), data, item -> {
                             // Saat item diklik, jalankan fungsi hack ini
                             openSafeStruk(item);
+                            Log.d("HistoryFragment", "Item clicked: " + item.idTransaksi);
                         });
                         recyclerHistory.setAdapter(adapter);
                     }
@@ -136,7 +138,7 @@ public class HistoryFragment extends Fragment {
         intent.putExtra("CUSTOMER_NAME", item.namaPenyewa);
         intent.putExtra("TOTAL_TAGIHAN", item.totalTagihan);
         intent.putExtra("TANGGAL", item.tanggalTransaksi);
-        intent.putExtra("INVOICE_ID", "#INV-" + item.idTransaksi);
+        intent.putExtra("TRANSACTION_ID", String.valueOf(item.idTransaksi));
 
         // Kirim Nomor TV & Console untuk ditampilkan di Struk
         // StrukActivity akan merakitnya jadi: "Sewa TV [No] ([Console])"

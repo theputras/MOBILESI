@@ -3,7 +3,7 @@ package com.theputras.posrentalps.model;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public class TransactionRequest {
+public class CheckoutRequest {
     @SerializedName("nama_penyewa")
     public String namaPenyewa;
 
@@ -14,15 +14,9 @@ public class TransactionRequest {
     public String metodePembayaran;
 
     @SerializedName("items")
-    public List<ItemDetail> items; // Ini LIST, bukan single ID
+    public List<ItemDetail> items;
 
-    public TransactionRequest(String namaPenyewa, int uangBayar, String metodePembayaran, List<ItemDetail> items) {
-        this.namaPenyewa = namaPenyewa;
-        this.uangBayar = uangBayar;
-        this.metodePembayaran = metodePembayaran;
-        this.items = items;
-    }
-
+    // Inner class untuk detail item
     public static class ItemDetail {
         @SerializedName("tv_id")
         public int tvId;

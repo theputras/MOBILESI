@@ -5,128 +5,147 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.widget.Button;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
-import com.theputras.posrentalps.utils.CartManager;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+
+// --- IMPORTS PENTING ---
+import com.theputras.posrentalps.databinding.ActivityStrukBinding;
+import com.theputras.posrentalps.api.ApiClient;
+import com.theputras.posrentalps.api.ApiService;
+import com.theputras.posrentalps.model.ApiResponse;
+import com.theputras.posrentalps.model.RiwayatTransaksi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class StrukActivity extends AppCompatActivity {
+
+    private ActivityStrukBinding binding;
+    private ApiService apiService;
+    private String transactionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_struk);
 
-        LinearLayout container = findViewById(R.id.containerItems);
-        TextView tvDate = findViewById(R.id.tvStrukDate);
-        TextView tvName = findViewById(R.id.tvStrukName);
-        TextView tvTotal = findViewById(R.id.tvStrukTotal);
-        TextView tvCash = findViewById(R.id.tvStrukCash);
-        TextView tvChange = findViewById(R.id.tvStrukChange);
-        Button btnBack = findViewById(R.id.btnBackHome);
-        Button btnPrint = findViewById(R.id.btnPrint);
+        // Setup ViewBinding
+        binding = ActivityStrukBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Ambil Data Intent
-        String custName = getIntent().getStringExtra("CUSTOMER_NAME");
-        String historyDate = getIntent().getStringExtra("TANGGAL");
-        int historyTotal = getIntent().getIntExtra("TOTAL_TAGIHAN", 0); // Penanda History
-        String historyTv = getIntent().getStringExtra("NOMOR_TV");
-        int historyDurasi = getIntent().getIntExtra("DURASI", 0);
-        int cashGiven = getIntent().getIntExtra("CASH_GIVEN", 0);
-        String nomorTv = getIntent().getStringExtra("NOMOR_TV");
-        String namaConsole = getIntent().getStringExtra("NAMA_CONSOLE");
-        // 1. SET NAMA
-        tvName.setText(custName != null ? custName : "Guest");
+        apiService = ApiClient.getClient().create(ApiService.class);
 
-        // 2. LOGIC CERDAS (HISTORY vs TRANSAKSI BARU)
-        if (historyTotal > 0) {
-            tvDate.setText(historyDate != null ? historyDate : "-");
+        // Ambil ID Transaksi
+        transactionId = getIntent().getStringExtra("TRANSACTION_ID");
 
-            // Format Tampilan Item: "TV 02 - PlayStation 5"
-            String deskripsi = (nomorTv != null ? nomorTv : "");
-            if (namaConsole != null && !namaConsole.isEmpty()) {
-                deskripsi += " - " + namaConsole;
-            }
-
-            addItemToStruk(container, deskripsi, historyTotal);
-
-            tvTotal.setText(String.format("Rp %,d", historyTotal));
-            tvCash.setText(String.format("Rp %,d", historyTotal));
-            tvChange.setText("Rp 0");
+        if (transactionId != null) {
+            loadStrukData(transactionId);
         } else {
-            // === MODE TRANSAKSI BARU ===
-            // Pakai Tanggal Sekarang
-            String now = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
-            tvDate.setText(now);
-
-            int total = 0;
-            // Ambil dari CartManager
-            if (CartManager.getInstance().getDisplayList() != null) {
-                for (CartManager.CartDisplay item : CartManager.getInstance().getDisplayList()) {
-                    addItemToStruk(container, item.displayName, item.price);
-                    total += item.price;
-                }
-            }
-
-            // Hitung Kembalian
-            if (cashGiven == 0) cashGiven = total;
-            int change = cashGiven - total;
-
-            tvTotal.setText(String.format("Rp %,d", total));
-            tvCash.setText(String.format("Rp %,d", cashGiven));
-            tvChange.setText(String.format("Rp %,d", change));
-
-            // HANYA CLEAR CART KALAU INI TRANSAKSI BARU
-            CartManager.getInstance().clear();
+            Toast.makeText(this, "ID Transaksi tidak ditemukan", Toast.LENGTH_SHORT).show();
+            finish();
         }
 
         // Tombol Kembali
-        btnBack.setOnClickListener(v -> {
-            // Kalau dari History, cukup finish() biar balik ke HistoryFragment
-            // Kalau Transaksi Baru, balik ke Home
-            if (historyTotal > 0) {
-                finish();
-            } else {
-                Intent intent = new Intent(StrukActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            }
+        binding.btnBackHome.setOnClickListener(v -> {
+            Intent intent = new Intent(StrukActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         });
 
-        btnPrint.setOnClickListener(v -> Toast.makeText(this, "Mencetak...", Toast.LENGTH_SHORT).show());
+        // Tombol Print (Sementara Toast dulu)
+        binding.btnPrint.setOnClickListener(v -> {
+            Toast.makeText(this, "Fitur Print Bluetooth sedang dikembangkan...", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void addItemToStruk(LinearLayout container, String name, int price) {
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 4, 0, 4);
-        row.setLayoutParams(params);
+    private void loadStrukData(String id) {
+        // Bisa tambah loading state disini kalau mau
 
-        TextView tvItem = new TextView(this);
-        tvItem.setText(name);
-        tvItem.setTextSize(12);
-        tvItem.setTextColor(Color.BLACK);
-        tvItem.setTypeface(Typeface.MONOSPACE);
-        LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-        tvItem.setLayoutParams(itemParams);
+        apiService.getTransactionDetail(id).enqueue(new Callback<ApiResponse<RiwayatTransaksi>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<RiwayatTransaksi>> call, Response<ApiResponse<RiwayatTransaksi>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<RiwayatTransaksi> apiResponse = response.body();
+                    if (apiResponse.data != null) {
+                        tampilkanData(apiResponse.data);
+                    } else {
+                        Toast.makeText(StrukActivity.this, "Data tidak ditemukan", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(StrukActivity.this, "Gagal memuat: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        TextView tvPrice = new TextView(this);
-        tvPrice.setText("Rp " + String.format("%,d", price));
-        tvPrice.setTextSize(12);
-        tvPrice.setTextColor(Color.BLACK);
-        tvPrice.setTypeface(Typeface.MONOSPACE);
-        tvPrice.setGravity(Gravity.END);
+            @Override
+            public void onFailure(Call<ApiResponse<RiwayatTransaksi>> call, Throwable t) {
+                Toast.makeText(StrukActivity.this, "Error Koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-        row.addView(tvItem);
-        row.addView(tvPrice);
-        container.addView(row);
+    private void tampilkanData(RiwayatTransaksi trx) {
+        // 1. Set Header Sesuai ID di XML kamu
+        binding.tvStrukDate.setText(trx.getTanggalTransaksi());
+        binding.tvStrukName.setText(trx.getNamaPenyewa()); // Bisa ditambah ID Transaksi kalau mau
+
+        // 2. Clear Container Item biar gak numpuk
+        binding.containerItems.removeAllViews();
+
+        // 3. LOOPING ITEM & Buat View secara Programmatic (Tanpa item_struk_row.xml)
+        if (trx.getDetails() != null) {
+            for (RiwayatTransaksi.DetailItem item : trx.getDetails()) {
+
+                // Buat Layout Baris Horizontal
+                LinearLayout rowLayout = new LinearLayout(this);
+                rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+                rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                ));
+                rowLayout.setPadding(0, 0, 0, 8); // Padding bawah dikit
+
+                // --- TEXTVIEW 1: NAMA BARANG & QTY ---
+                TextView tvNama = new TextView(this);
+                // Nama + Qty (Misal: Sewa PS5 x1)
+                tvNama.setText(item.getNamaItem() + "  x" + item.getQty());
+                tvNama.setTextColor(Color.BLACK);
+                tvNama.setTextSize(12);
+                tvNama.setTypeface(Typeface.MONOSPACE); // Biar kayak struk
+
+                // Layout Params (Weight 1 biar menuhin kiri)
+                LinearLayout.LayoutParams paramsNama = new LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                tvNama.setLayoutParams(paramsNama);
+
+                // --- TEXTVIEW 2: SUBTOTAL ---
+                TextView tvHarga = new TextView(this);
+                tvHarga.setText(formatRupiah(item.getSubtotal()));
+                tvHarga.setTextColor(Color.BLACK);
+                tvHarga.setTextSize(12);
+                tvHarga.setTypeface(Typeface.MONOSPACE); // Biar kayak struk
+                tvHarga.setGravity(Gravity.END); // Rata Kanan
+
+                // Masukkan ke Row
+                rowLayout.addView(tvNama);
+                rowLayout.addView(tvHarga);
+
+                // Masukkan Row ke Container XML
+                binding.containerItems.addView(rowLayout);
+            }
+        }
+
+        // 4. Set Footer (Totalan) Sesuai ID XML kamu
+        binding.tvStrukTotal.setText(formatRupiah(trx.getTotalTagihan()));
+        binding.tvStrukCash.setText(formatRupiah(trx.getUangBayar()));
+        binding.tvStrukChange.setText(formatRupiah(trx.getUangKembalian()));
+    }
+
+    private String formatRupiah(int number) {
+        return "Rp " + String.format("%,d", number).replace(',', '.');
     }
 }

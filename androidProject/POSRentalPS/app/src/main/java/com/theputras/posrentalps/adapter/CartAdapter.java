@@ -14,18 +14,19 @@ import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
-    private final List<CartManager.CartDisplay> list;
+    private List<CartManager.CartDisplay> items;
     private final CartListener listener;
 
     public interface CartListener {
-        void onDeleteClick(int position);
-//        void onCartUpdated();
+        void onCartUpdated(); // Method wajib ada
     }
 
-    public CartAdapter(List<CartManager.CartDisplay> list, CartListener listener) {
-        this.list = list;
+    public CartAdapter(List<CartManager.CartDisplay> items, CartListener listener) {
+        this.items = items;
         this.listener = listener;
     }
+
+
 
     @NonNull
     @Override
@@ -38,34 +39,41 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        CartManager.CartDisplay item = list.get(position);
+        CartManager.CartDisplay item = items.get(position);
 
-        holder.tvName.setText(item.displayName);
-        holder.tvPrice.setText("Rp " + item.price);
+        holder.tvName.setText(item.getDisplayName());
+        String hargaStr = "Rp " + String.format("%,d", item.getPrice()).replace(',', '.');
+        holder.tvPrice.setText(hargaStr);
+        if (listener != null) {
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setOnClickListener(v -> {
+                // Hapus dari CartManager
+                CartManager.getInstance().removeItem(holder.getAdapterPosition());
+
+                // Update tampilan Recycler
+                notifyItemRemoved(holder.getAdapterPosition());
+                notifyItemRangeChanged(holder.getAdapterPosition(), items.size());
+
+                // Panggil listener biar total harga di fragment update
+                listener.onCartUpdated();
+            });
+        }
+            // Di PaymentActivity, tombol hapus disembunyikan biar gak ribet
+            holder.btnDelete.setVisibility(View.GONE);
+//        // Hanya Logic Hapus
         holder.btnDelete.setOnClickListener(v -> {
             CartManager.getInstance().removeItem(position);
             notifyItemRemoved(position);
-            notifyItemRangeChanged(position, list.size());
-            // Gunakan holder.getAdapterPosition() untuk posisi yang akurat saat animasi hapus
-            if (listener != null) {
-                listener.onDeleteClick(holder.getAdapterPosition());
-//                listener.onCartUpdated();
-            }
+//            notifyItemRangeChanged(position, item.size());
+
+            // Beritahu Activity untuk update total harga
+            if (listener != null) listener.onCartUpdated();
         });
-//        // Hanya Logic Hapus
-//        holder.btnDelete.setOnClickListener(v -> {
-//            CartManager.getInstance().removeItem(position);
-//            notifyItemRemoved(position);
-//            notifyItemRangeChanged(position, list.size());
-//
-//            // Beritahu Activity untuk update total harga
-//            if (listener != null) listener.onCartUpdated();
-//        });
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return items.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

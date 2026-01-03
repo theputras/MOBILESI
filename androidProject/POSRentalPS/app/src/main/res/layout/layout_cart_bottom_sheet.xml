@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/bg_bottom_sheet">
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingBottom="16dp">
 
     <View
         android:layout_width="40dp"
@@ -16,62 +18,59 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Checkout Sewa"
+        android:text="Checkout Pembayaran"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/black"
         android:gravity="center"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="24dp">
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerCart"
+                android:id="@+id/recyclerCartItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_cart"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/gray_light"/>
+                android:background="#E0E0E0"
+                android:layout_marginBottom="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nama Penyewa"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="12dp"
-                app:boxStrokeColor="@color/design_default_color_primary"
-                app:hintTextColor="@color/design_default_color_primary">
+                android:layout_marginBottom="12dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNamaPenyewa"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:textSize="16sp"
-                    android:textColor="@color/text_primary"/>
+                    android:textColor="@color/black"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Metode Pembayaran"
-                android:textSize="14sp"
-                android:textColor="@color/text_grey"
+                android:textSize="12sp"
+                android:textColor="#757575"
                 android:layout_marginBottom="8dp"/>
 
             <RadioGroup
@@ -79,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
                 <RadioButton
                     android:id="@+id/rbTunai"
@@ -88,8 +87,7 @@
                     android:layout_weight="1"
                     android:text="Tunai"
                     android:checked="true"
-                    android:textColor="@color/text_primary"
-                    android:buttonTint="@color/design_default_color_primary"/>
+                    android:textColor="@color/black"/>
 
                 <RadioButton
                     android:id="@+id/rbQris"
@@ -97,64 +95,57 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="QRIS"
-                    android:textColor="@color/text_primary"
-                    android:buttonTint="@color/design_default_color_primary"/>
+                    android:textColor="@color/black"/>
             </RadioGroup>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutEtCash"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Uang Diterima (Rp)"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_marginBottom="16dp"
-                app:boxStrokeColor="@color/design_default_color_primary"
-                app:hintTextColor="@color/design_default_color_primary">
+                android:layout_marginBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCash"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number"
-                    android:textSize="16sp"
-                    android:textColor="@color/text_primary"/>
+                    android:textColor="@color/black"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="16dp"
-                android:padding="12dp">
+                android:layout_marginBottom="24dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Total Tagihan"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    android:textColor="@color/black"/>
 
                 <TextView
-                    android:id="@+id/tvTotalCart"
+                    android:id="@+id/tvTotalCartPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Rp 0"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"/>
+                    android:textColor="#2E7D32"/>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnProcessPay"
+                android:id="@+id/btnCheckout"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="BAYAR SEKARANG"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 app:cornerRadius="8dp"
-                app:backgroundTint="@color/primary_brand"/>
-
+                android:layout_marginBottom="200dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

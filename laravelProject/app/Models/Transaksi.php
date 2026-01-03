@@ -2,46 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Transaksi extends Model
 {
-    use HasFactory;
-
     protected $table = 'transaksi';
-    protected $primaryKey = 'id_transaksi';
     
-    // Pastikan fillable sudah benar
+    // Kita set Primary Key manual (String)
+    protected $primaryKey = 'id_transaksi';
+    public $incrementing = false; 
+    protected $keyType = 'string';
+
+    // Hapus 'tv_id', 'id_paket', 'id_inv' dari sini.
     protected $fillable = [
-        'nama_penyewa', 'tv_id', 'id_paket', 'total_tagihan', 
-        'uang_bayar', 'uang_kembalian', 'metode_pembayaran', 
-        'status_pembayaran', 'tanggal_transaksi'
+        'id_transaksi', // PK kita input manual
+        'nama_penyewa', 
+        'total_tagihan', 
+        'uang_bayar', 
+        'uang_kembalian', 
+        'metode_pembayaran', 
+        'status_pembayaran', 
+        'tanggal_transaksi'
     ];
 
-    // Otomatis load relasi 'tv' dan append attribute 'console' setiap query
-    protected $with = ['tv']; 
-    protected $appends = ['console']; 
-
-    // Relasi ke TV
-    public function tv()
+    // Relasi ke Detail (One to Many)
+    public function details(): HasMany
     {
-        return $this->belongsTo(Tv::class, 'tv_id', 'id'); // Pastikan 'id' adalah PK di tabel tvs
-    }
-
-    // Relasi ke Paket (Opsional)
-    public function paket()
-    {
-        return $this->belongsTo(PaketSewa::class, 'id_paket', 'id_paket');
-    }
-
-    // --- MAGIC ACCESSOR: Ini yang bikin field "console" terisi ---
-public function getConsoleAttribute()
-    {
-        // Jika TV ada DAN relasi jenisConsole ada, kembalikan datanya
-        if ($this->tv && $this->tv->jenisConsole) {
-            return $this->tv->jenisConsole;
-        }
-        return null;
+        return $this->hasMany(DetailTransaksi::class, 'id_transaksi', 'id_transaksi');
     }
 }

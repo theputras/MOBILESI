@@ -40,7 +40,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         TransactionItem item = list.get(position);
 
-        holder.tvInvoice.setText("#INV-" + item.idTransaksi);
+        holder.tvInvoice.setText(String.valueOf(item.idTransaksi));
         holder.tvDate.setText(item.tanggalTransaksi);
         holder.tvName.setText(item.namaPenyewa);
         holder.tvAmount.setText("Rp " + String.format("%,d", item.totalTagihan));
