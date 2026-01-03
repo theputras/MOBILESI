@@ -92,7 +92,7 @@ public class StrukActivity extends AppCompatActivity {
         // 1. Set Header Sesuai ID di XML kamu
         binding.tvStrukDate.setText(trx.getTanggalTransaksi());
         binding.tvStrukName.setText(trx.getNamaPenyewa()); // Bisa ditambah ID Transaksi kalau mau
-
+        binding.tvIdTransaksi.setText("Bon " + trx.getIdTransaksi());
         // 2. Clear Container Item biar gak numpuk
         binding.containerItems.removeAllViews();
 

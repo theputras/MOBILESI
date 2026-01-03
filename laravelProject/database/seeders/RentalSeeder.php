@@ -43,6 +43,7 @@ class RentalSeeder extends Seeder
             ['id_console' => 1, 'nama_paket' => '1 Jam',    'durasi_menit' => 60,  'harga' => 50000,  'created_at' => now(), 'updated_at' => now()],
             ['id_console' => 1, 'nama_paket' => '3 Jam',    'durasi_menit' => 180, 'harga' => 140000, 'created_at' => now(), 'updated_at' => now()],
             ['id_console' => 1, 'nama_paket' => '5 Jam',    'durasi_menit' => 300, 'harga' => 220000, 'created_at' => now(), 'updated_at' => now()],
+            ['id_console' => 1, 'nama_paket' => '1 Menit',  'durasi_menit' => 1,   'harga' => 500,    'created_at' => now(), 'updated_at' => now()],
 
             // --- PAKET PS 4 (ID = 2) ---
             ['id_console' => 2, 'nama_paket' => '15 Menit', 'durasi_menit' => 15,  'harga' => 10000,  'created_at' => now(), 'updated_at' => now()],
@@ -95,6 +96,7 @@ class RentalSeeder extends Seeder
                 'status' => 'maintenance', 
                 'created_at' => now(), 'updated_at' => now()
             ],
+            
         ];
 
         DB::table('tvs')->insert($tvs);

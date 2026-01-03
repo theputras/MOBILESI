@@ -6,6 +6,9 @@ public class PaketSewa {
     public int idPaket;
     @SerializedName("nama_paket")
     public String namaPaket;
+
+    @SerializedName("id_console")
+    public int idConsole;
     @SerializedName("durasi_menit")
     public int durasiMenit;
     @SerializedName("harga")

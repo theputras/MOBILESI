@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,9 +19,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.theputras.posrentalps.PaymentActivity;
 import com.google.android.material.button.MaterialButton;
+import java.util.Collections;
+import java.util.Comparator;
 import com.theputras.posrentalps.R;
 import com.theputras.posrentalps.StrukActivity;
 import com.theputras.posrentalps.adapter.CartAdapter;
@@ -29,6 +33,7 @@ import com.theputras.posrentalps.adapter.TvGridAdapter;
 import com.theputras.posrentalps.api.ApiClient;
 import com.theputras.posrentalps.api.ApiService;
 import com.theputras.posrentalps.databinding.FragmentHomeBinding;
+import com.theputras.posrentalps.databinding.LayoutCartBottomSheetBinding;
 import com.theputras.posrentalps.model.ApiResponse;
 import com.theputras.posrentalps.model.PaketSewa;
 import com.theputras.posrentalps.model.RiwayatTransaksi;
@@ -40,6 +45,8 @@ import com.theputras.posrentalps.utils.CartManager;
 import android.widget.RadioGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -155,18 +162,47 @@ public class HomeFragment extends Fragment {
         dialog.setContentView(dialogView);
 
         RecyclerView recyclerPaket = dialogView.findViewById(R.id.recyclerPaket);
-        recyclerPaket.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerPaket.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         apiService.getPakets().enqueue(new Callback<List<PaketSewa>>() {
             @Override
             public void onResponse(Call<List<PaketSewa>> call, Response<List<PaketSewa>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<PaketSewa> paketList = response.body();
-                    PaketAdapter paketAdapter = new PaketAdapter(paketList, selectedPaket -> {
+
+                    // 1. Definisikan variabel 'allPakets' dari response server
+                    List<PaketSewa> allPakets = response.body();
+                    List<PaketSewa> filteredPakets = new ArrayList<>();
+
+                    // 2. Ambil ID Console dari TV (Pakai akses langsung field .idConsole)
+                    int targetConsoleId = 0;
+                    if (tv.getJenisConsole() != null) {
+                        // FIX: Langsung panggil .idConsole (karena di model public dan gak ada getter)
+                        targetConsoleId = tv.getJenisConsole().idConsole;
+                    }
+
+                    // 3. Filter Paket
+                    for (PaketSewa p : allPakets) {
+                        // Masukkan paket yang ID Console-nya SAMA
+                        if (p.idConsole == targetConsoleId) {
+                            filteredPakets.add(p);
+                        }
+                    }
+
+                    // 4. Sorting (Urutkan dari durasi terpendek)
+                    Collections.sort(filteredPakets, new Comparator<PaketSewa>() {
+                        @Override
+                        public int compare(PaketSewa p1, PaketSewa p2) {
+                            return Integer.compare(p1.durasiMenit, p2.durasiMenit);
+                        }
+                    });
+
+                    // 5. Masukkan list yang SUDAH DI-FILTER ke Adapter
+                    PaketAdapter paketAdapter = new PaketAdapter(filteredPakets, selectedPaket -> {
                         addToCart(tv, selectedPaket);
                         dialog.dismiss();
                     });
                     recyclerPaket.setAdapter(paketAdapter);
+
                 } else {
                     Toast.makeText(getContext(), "Gagal memuat paket", Toast.LENGTH_SHORT).show();
                 }
@@ -208,38 +244,41 @@ public class HomeFragment extends Fragment {
     }
 
     private void showCartBottomSheet() {
-        BottomSheetDialog cartDialog = new BottomSheetDialog(requireContext());
+        // 1. Setup Dialog & View
+        BottomSheetDialog cartDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
+        // Kita pakai cara manual inflate aja biar cocok sama kodingan bawahmu
         View view = getLayoutInflater().inflate(R.layout.layout_cart_bottom_sheet, null);
         cartDialog.setContentView(view);
 
-        // Binding Views
+        // 2. Binding Views (Pakai 'view' yang sudah di-set ke dialog)
         RecyclerView recyclerCart = view.findViewById(R.id.recyclerCartItems);
         TextView tvTotal = view.findViewById(R.id.tvTotalCartPrice);
-        TextInputEditText etNama = view.findViewById(R.id.etNamaPenyewa);
-        TextInputEditText etCash = view.findViewById(R.id.etCash);
+        com.google.android.material.textfield.TextInputEditText etNama = view.findViewById(R.id.etNamaPenyewa);
+        com.google.android.material.textfield.TextInputEditText etCash = view.findViewById(R.id.etCash);
         RadioGroup rgPayment = view.findViewById(R.id.rgPaymentMethod);
-        MaterialButton btnCheckout = view.findViewById(R.id.btnCheckout);
+        com.google.android.material.button.MaterialButton btnCheckout = view.findViewById(R.id.btnCheckout);
 
         recyclerCart.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Cek Kosong
+        // 3. Cek Kosong
         if (CartManager.getInstance().getCartItems().isEmpty()) {
             Toast.makeText(getContext(), "Keranjang Kosong", Toast.LENGTH_SHORT).show();
             cartDialog.dismiss();
             return;
         }
 
-        // Setup Adapter
+        // 4. Setup Adapter & Listener Update Harga
         CartAdapter cartAdapter = new CartAdapter(CartManager.getInstance().getCartItems(), new CartAdapter.CartListener() {
             @Override
             public void onCartUpdated() {
-                // Update total saat item dihapus
                 int newTotal = CartManager.getInstance().getTotalPrice();
                 tvTotal.setText("Rp " + String.format("%,d", newTotal).replace(',', '.'));
-                updateCartUI();
+                updateCartUI(); // Update badge/total di fragment utama
 
-                if (adapter != null) adapter.notifyDataSetChanged(); // Update warna Grid TV
+                // Update warna Grid TV di halaman utama (jika ada variabel adapter tv)
+                if (adapter != null) adapter.notifyDataSetChanged();
 
+                // Kalau habis dihapus jadi kosong, tutup dialog
                 if (CartManager.getInstance().getCartItems().isEmpty()) {
                     cartDialog.dismiss();
                 }
@@ -251,9 +290,9 @@ public class HomeFragment extends Fragment {
         int total = CartManager.getInstance().getTotalPrice();
         tvTotal.setText("Rp " + String.format("%,d", total).replace(',', '.'));
 
-        // --- LOGIC QRIS BYPASS ---
+        // 5. Logic QRIS Bypass
         rgPayment.setOnCheckedChangeListener((group, checkedId) -> {
-            int currentTotal = CartManager.getInstance().getTotalPrice(); // Ambil harga terbaru
+            int currentTotal = CartManager.getInstance().getTotalPrice();
             if (checkedId == R.id.rbQris) {
                 etCash.setText(String.valueOf(currentTotal));
                 etCash.setEnabled(false);
@@ -264,7 +303,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // --- TOMBOL BAYAR (PROSES TRANSAKSI) ---
+        // 6. Tombol Checkout
         btnCheckout.setOnClickListener(v -> {
             String nama = etNama.getText().toString().trim();
             String cashStr = etCash.getText().toString().trim();
@@ -278,7 +317,14 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
-            int uangBayar = Integer.parseInt(cashStr);
+            int uangBayar;
+            try {
+                uangBayar = Integer.parseInt(cashStr);
+            } catch (NumberFormatException e) {
+                etCash.setError("Format salah");
+                return;
+            }
+
             int totalTagihan = CartManager.getInstance().getTotalPrice();
 
             if (uangBayar < totalTagihan) {
@@ -288,20 +334,23 @@ public class HomeFragment extends Fragment {
 
             // Siapkan Request
             String metode = (rgPayment.getCheckedRadioButtonId() == R.id.rbQris) ? "QRIS" : "TUNAI";
-
             List<TransactionRequest.ItemDetail> itemsToSend = new ArrayList<>();
+
             for (CartManager.CartDisplay item : CartManager.getInstance().getCartItems()) {
-                itemsToSend.add(new TransactionRequest.ItemDetail(
-                        item.getTv().getId(),
-                        item.getPaket().idPaket
-                ));
+                if (item.getTv() != null && item.getPaket() != null) {
+                    itemsToSend.add(new TransactionRequest.ItemDetail(
+                            item.getTv().getId(),
+                            item.getPaket().idPaket
+                    ));
+                }
             }
 
             TransactionRequest request = new TransactionRequest(nama, uangBayar, metode, itemsToSend);
 
-            // Loading UI (Disable button)
+            // Loading State
             btnCheckout.setEnabled(false);
             btnCheckout.setText("MEMPROSES...");
+
             // API CALL
             apiService.saveTransaction(request).enqueue(new Callback<ApiResponse<RiwayatTransaksi>>() {
                 @Override
@@ -311,23 +360,25 @@ public class HomeFragment extends Fragment {
 
                     if (response.isSuccessful() && response.body() != null) {
                         if (response.body().success) {
-                        Toast.makeText(getContext(), "Transaksi Berhasil!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Transaksi Berhasil!", Toast.LENGTH_LONG).show();
 
-                        CartManager.getInstance().clearCart();
-                        updateCartUI();
-                        if(adapter != null) adapter.notifyDataSetChanged(); // Reset warna TV
+                            CartManager.getInstance().clearCart();
+                            updateCartUI();
+                            if (adapter != null) adapter.notifyDataSetChanged();
 
-                        cartDialog.dismiss(); // Tutup BottomSheet
+                            cartDialog.dismiss();
 
-                        // Pindah ke Struk
-                        if (response.body().data != null) {
-                            Intent intent = new Intent(getContext(), StrukActivity.class);
-                            intent.putExtra("TRANSACTION_ID", response.body().data.getIdTransaksi());
-                            startActivity(intent);
-                        }
+                            // Pindah ke Struk (Pass ID Transaksi)
+                            if (response.body().data != null) {
+                                Intent intent = new Intent(getContext(), StrukActivity.class);
+                                intent.putExtra("TRANSACTION_ID", response.body().data.getIdTransaksi());
+                                startActivity(intent);
+                            }
+                        } else {
+                            Toast.makeText(getContext(), response.body().message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(getContext(), "Gagal: " + (response.body() != null ? response.body().message : "Unknown"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Gagal: " + response.message(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -335,14 +386,36 @@ public class HomeFragment extends Fragment {
                 public void onFailure(Call<ApiResponse<RiwayatTransaksi>> call, Throwable t) {
                     btnCheckout.setText("BAYAR SEKARANG");
                     btnCheckout.setEnabled(true);
-                    Toast.makeText(getContext(), "Error Koneksi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error Koneksi: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
+        // 7. Logic Full Screen (Swipe Up)
+        cartDialog.setOnShowListener(dialogInterface -> {
+            BottomSheetDialog d = (BottomSheetDialog) dialogInterface;
+            FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+
+            if (bottomSheet != null) {
+                // Set tinggi bottom sheet jadi setinggi layar HP
+                ViewGroup.LayoutParams layoutParams = bottomSheet.getLayoutParams();
+                layoutParams.height = getResources().getDisplayMetrics().heightPixels;
+                bottomSheet.setLayoutParams(layoutParams);
+
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+
+                // Awal muncul: Collapsed (setengah/sesuai peekHeight default)
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                // Opsional: Atur tinggi intial biar enak dilihat (misal 60% layar)
+                 behavior.setPeekHeight(getResources().getDisplayMetrics().heightPixels / 2);
+
+                behavior.setSkipCollapsed(true);
+            }
+        });
+
         cartDialog.show();
     }
-
     private void updateCartUI() {
         int count = CartManager.getInstance().getCartItems().size();
 

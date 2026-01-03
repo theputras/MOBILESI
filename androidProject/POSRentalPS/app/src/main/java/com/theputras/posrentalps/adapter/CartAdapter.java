@@ -1,89 +1,89 @@
 package com.theputras.posrentalps.adapter;
 
-import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.theputras.posrentalps.R;
 import com.theputras.posrentalps.utils.CartManager;
+
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
-    private List<CartManager.CartDisplay> items;
-    private final CartListener listener;
+    private List<CartManager.CartDisplay> cartItems;
+    private CartListener listener;
 
+    // Interface buat ngabarin ke HomeFragment kalau ada perubahan (biar Total Harga update)
     public interface CartListener {
-        void onCartUpdated(); // Method wajib ada
+        void onCartUpdated();
     }
 
-    public CartAdapter(List<CartManager.CartDisplay> items, CartListener listener) {
-        this.items = items;
+    public CartAdapter(List<CartManager.CartDisplay> cartItems, CartListener listener) {
+        this.cartItems = cartItems;
         this.listener = listener;
     }
-
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Pastikan item_cart.xml sudah diupdate (tanpa qty)
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
         return new ViewHolder(view);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        CartManager.CartDisplay item = items.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        CartManager.CartDisplay item = cartItems.get(position);
+        Context context = holder.itemView.getContext();
 
         holder.tvName.setText(item.getDisplayName());
-        String hargaStr = "Rp " + String.format("%,d", item.getPrice()).replace(',', '.');
-        holder.tvPrice.setText(hargaStr);
-        if (listener != null) {
-            holder.btnDelete.setVisibility(View.VISIBLE);
-            holder.btnDelete.setOnClickListener(v -> {
-                // Hapus dari CartManager
-                CartManager.getInstance().removeItem(holder.getAdapterPosition());
+        holder.tvPrice.setText("Rp " + String.format("%,d", item.getPrice()).replace(',', '.'));
 
-                // Update tampilan Recycler
-                notifyItemRemoved(holder.getAdapterPosition());
-                notifyItemRangeChanged(holder.getAdapterPosition(), items.size());
-
-                // Panggil listener biar total harga di fragment update
-                listener.onCartUpdated();
-            });
-        }
-            // Di PaymentActivity, tombol hapus disembunyikan biar gak ribet
-            holder.btnDelete.setVisibility(View.GONE);
-//        // Hanya Logic Hapus
+        // --- LOGIC TOMBOL HAPUS ---
         holder.btnDelete.setOnClickListener(v -> {
-            CartManager.getInstance().removeItem(position);
-            notifyItemRemoved(position);
-//            notifyItemRangeChanged(position, item.size());
+            // --- TAMBAHAN: ALERT DIALOG KONFIRMASI ---
+            new AlertDialog.Builder(context)
+                    .setTitle("Hapus Item")
+                    .setMessage("Yakin ingin menghapus " + item.getDisplayName() + "?")
+                    .setPositiveButton("Hapus", (dialog, which) -> {
 
-            // Beritahu Activity untuk update total harga
-            if (listener != null) listener.onCartUpdated();
+                        // Eksekusi Hapus saat pilih "YA"
+                        int currentPos = holder.getAdapterPosition();
+                        if (currentPos != RecyclerView.NO_POSITION) {
+                            CartManager.getInstance().removeItem(currentPos);
+                            notifyItemRemoved(currentPos);
+                            notifyItemRangeChanged(currentPos, cartItems.size());
+                            listener.onCartUpdated();
+                        }
+                    })
+                    .setNegativeButton("Batal", null) // Tutup dialog kalau pilih "Batal"
+                    .show();
+            // -----------------------------------------
         });
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return cartItems.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvPrice;
-        ImageButton btnDelete;
+        ImageButton btnDelete; // Pastikan ini ada
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvCartItemName);
             tvPrice = itemView.findViewById(R.id.tvCartItemPrice);
+
+            // Binding ID dari XML kamu
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

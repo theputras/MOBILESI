@@ -145,34 +145,33 @@ public class PaymentActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<RiwayatTransaksi> apiResponse = response.body();
 
-                    if (apiResponse.success) {
-                        Toast.makeText(PaymentActivity.this, "Sukses!", Toast.LENGTH_LONG).show();
+                    // Cek flag success dari backend
+                    if (apiResponse.success) { // Pastikan backend kirim 'success': true
+                        Toast.makeText(PaymentActivity.this, "Transaksi Berhasil!", Toast.LENGTH_LONG).show();
+
+                        // Bersihkan keranjang
                         CartManager.getInstance().clearCart();
 
+                        // --- BAGIAN INI YANG PENTING AGAR STRUK MUNCUL ---
                         if (apiResponse.data != null) {
                             Intent intent = new Intent(PaymentActivity.this, StrukActivity.class);
-                            // ID ini harus sesuai dengan yang dikirim backend (sekarang id_transaksi)
+                            // Kita kirim ID Transaksi yang baru saja dibuat
                             intent.putExtra("TRANSACTION_ID", apiResponse.data.getIdTransaksi());
                             startActivity(intent);
-                            finish();
+                            finish(); // Tutup halaman payment
                         } else {
-                            Toast.makeText(PaymentActivity.this, "Sukses tapi data struk kosong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PaymentActivity.this, "Sukses, tapi data ID tidak kembali", Toast.LENGTH_SHORT).show();
                         }
+                        // --------------------------------------------------
+
                     } else {
-                        // FIX: Handle pesan null
+                        // Menangani pesan error dari backend
                         String msg = apiResponse.message != null ? apiResponse.message : "Gagal: Pesan tidak diketahui";
                         Toast.makeText(PaymentActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Jika error dari server (400/404/500)
-                    String errorMsg = "Error Server: " + response.code();
-                    try {
-                        if (response.errorBody() != null) {
-                            // Mencoba membaca error body jika ada
-                            // errorMsg += " " + response.errorBody().string(); // Hati-hati ini bisa exception di main thread
-                        }
-                    } catch (Exception e) {}
-                    Toast.makeText(PaymentActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    // Error HTTP (404, 500, dll)
+                    Toast.makeText(PaymentActivity.this, "Gagal: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
