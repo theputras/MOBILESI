@@ -23,10 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.theputras.posrentalps.PaymentActivity;
-import com.google.android.material.button.MaterialButton;
+
 import java.util.Collections;
-import java.util.Comparator;
+
 import com.theputras.posrentalps.R;
 import com.theputras.posrentalps.StrukActivity;
 import com.theputras.posrentalps.adapter.CartAdapter;
@@ -35,7 +34,6 @@ import com.theputras.posrentalps.adapter.TvGridAdapter;
 import com.theputras.posrentalps.api.ApiClient;
 import com.theputras.posrentalps.api.ApiService;
 import com.theputras.posrentalps.databinding.FragmentHomeBinding;
-import com.theputras.posrentalps.databinding.LayoutCartBottomSheetBinding;
 import com.theputras.posrentalps.model.ApiResponse;
 import com.theputras.posrentalps.model.PaketSewa;
 import com.theputras.posrentalps.model.RiwayatTransaksi;
@@ -45,10 +43,8 @@ import com.theputras.posrentalps.model.TvResponse;
 import com.theputras.posrentalps.utils.CartManager;
 
 import android.widget.RadioGroup;
-import com.google.android.material.textfield.TextInputEditText;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -300,16 +296,16 @@ public class HomeFragment extends Fragment {
         // 1. Setup Dialog & View
         BottomSheetDialog cartDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme);
         // Kita pakai cara manual inflate aja biar cocok sama kodingan bawahmu
-        View view = getLayoutInflater().inflate(R.layout.layout_cart_bottom_sheet, null);
+        View view = getLayoutInflater().inflate(R.layout.activity_payment, null);
         cartDialog.setContentView(view);
 
         // 2. Binding Views (Pakai 'view' yang sudah di-set ke dialog)
-        RecyclerView recyclerCart = view.findViewById(R.id.recyclerCartItems);
-        TextView tvTotal = view.findViewById(R.id.tvTotalCartPrice);
+        RecyclerView recyclerCart = view.findViewById(R.id.recyclerCart);
+        TextView tvTotal = view.findViewById(R.id.tvTotalCart);
         com.google.android.material.textfield.TextInputEditText etNama = view.findViewById(R.id.etNamaPenyewa);
         com.google.android.material.textfield.TextInputEditText etCash = view.findViewById(R.id.etCash);
         RadioGroup rgPayment = view.findViewById(R.id.rgPaymentMethod);
-        com.google.android.material.button.MaterialButton btnCheckout = view.findViewById(R.id.btnCheckout);
+        com.google.android.material.button.MaterialButton btnCheckout = view.findViewById(R.id.btnProcessPay);
 
         recyclerCart.setLayoutManager(new LinearLayoutManager(getContext()));
 

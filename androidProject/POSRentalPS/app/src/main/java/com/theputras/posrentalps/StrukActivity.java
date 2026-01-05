@@ -167,7 +167,7 @@ public class StrukActivity extends AppCompatActivity {
                 // --- TEXTVIEW 1: NAMA BARANG & QTY ---
                 TextView tvNama = new TextView(this);
                 // Nama + Qty (Misal: Sewa PS5 x1)
-                tvNama.setText(item.getNamaItem() + "  x" + item.getQty());
+                tvNama.setText(item.getNamaItem());
                 tvNama.setTextColor(Color.BLACK);
                 tvNama.setTextSize(12);
                 tvNama.setTypeface(Typeface.MONOSPACE); // Biar kayak struk
@@ -231,12 +231,12 @@ public class StrukActivity extends AppCompatActivity {
                     for (RiwayatTransaksi.DetailItem item : currentTransaksi.getDetails()) {
                         String nama = item.getNamaItem();
                         // Potong nama kalau kepanjangan
-                        if (nama.length() > 20) nama = nama.substring(0, 20);
+                        if (nama.length() > 22) nama = nama.substring(0, 22);
 
                         bt.print((nama + "\n").getBytes());
 
                         // Format: x1   Rp 20.000 (Rata Kanan Manual sederhana)
-                        String qtyHarga = "x" + item.getQty() + "     " + formatRupiah(item.getSubtotal());
+                        String qtyHarga = formatRupiah(item.getSubtotal());
                         bt.print(BluetoothUtil.ALIGN_RIGHT);
                         bt.print((qtyHarga + "\n").getBytes());
                         bt.print(BluetoothUtil.ALIGN_LEFT);

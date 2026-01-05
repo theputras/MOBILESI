@@ -65,9 +65,13 @@ public class AccountFragment extends Fragment {
     }
     private void updatePaperStatusUI() {
         int width = bluetoothUtil.getPrinterWidth();
+
         if (width == 48) {
             binding.tvPaperStatus.setText("80mm (Besar)");
+        } else if (width == 24) {
+            binding.tvPaperStatus.setText("48mm (Mini)");
         } else {
+            // Default 32 atau angka lain
             binding.tvPaperStatus.setText("58mm (Standar)");
         }
     }
@@ -96,21 +100,34 @@ public class AccountFragment extends Fragment {
     }
     private void showPaperSizeDialog() {
         // Pilihan Menu
-        String[] options = {"58mm (Printer Kecil/Mobile)", "80mm (Printer Kasir Besar)"};
+        String[] options = {
+                "48mm (Mini/Saku)",
+                "58mm (Standar/Mobile)",
+                "80mm (Printer Kasir Besar)"
+        };
 
         // Cari tahu mana yang lagi aktif sekarang buat set default check
         int currentWidth = bluetoothUtil.getPrinterWidth();
-        int checkedItem = (currentWidth == 48) ? 1 : 0; // Kalau 48 berarti index 1, selain itu 0
-
+        int checkedItem = 1; // Kalau 48 berarti index 1, selain itu 0
+        if (currentWidth == 24) {
+            checkedItem = 0; // 48mm
+        } else if (currentWidth == 32) {
+            checkedItem = 1; // 58mm
+        } else if (currentWidth == 48) {
+            checkedItem = 2; // 80mm
+        }
         new AlertDialog.Builder(requireContext())
                 .setTitle("Pilih Ukuran Kertas")
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     // Logic simpan pilihan
                     if (which == 0) {
-                        // Pilih 58mm -> 32 Karakter
+                        // 48mm -> Set 24 Karakter
+                        bluetoothUtil.savePrinterWidth(24);
+                    } else if (which == 1) {
+                        // 58mm -> Set 32 Karakter (Standar)
                         bluetoothUtil.savePrinterWidth(32);
                     } else {
-                        // Pilih 80mm -> 48 Karakter
+                        // 80mm -> Set 48 Karakter
                         bluetoothUtil.savePrinterWidth(48);
                     }
 
