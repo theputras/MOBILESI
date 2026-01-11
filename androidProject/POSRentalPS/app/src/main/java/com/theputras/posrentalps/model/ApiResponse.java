@@ -11,5 +11,5 @@ public class ApiResponse<T> {
     @SerializedName("data")
     public T data;
 
-    public ApiResponse() {}
+//    public ApiResponse() {}
 }

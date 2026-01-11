@@ -26,8 +26,8 @@ public interface ApiService {
 
     // Sesuai Route::post('/transaksi', ...)
     // Note: Laravel biasanya return satu object transaksi yang baru dibuat
-    @POST("transaksi")
-    Call<ApiResponse<List<TransactionItem>>> saveTransaction(@Body CheckoutRequest request);
+//    @POST("transaksi")
+//    Call<ApiResponse<List<TransactionItem>>> saveTransaction(@Body CheckoutRequest request);
     @POST("transaksi")
     Call<ApiResponse<RiwayatTransaksi>> saveTransaction(@Body TransactionRequest request);
 
