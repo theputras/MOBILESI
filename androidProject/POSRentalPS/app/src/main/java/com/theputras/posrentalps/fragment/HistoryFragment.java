@@ -90,7 +90,7 @@ public class HistoryFragment extends Fragment {
     private void fetchHistory() {
         swipeRefresh.setRefreshing(true);
 
-        ApiClient.getClient().create(ApiService.class).getHistory().enqueue(new Callback<ApiResponse<List<TransactionItem>>>() {
+        ApiClient.getClient(requireContext()).create(ApiService.class).getHistory().enqueue(new Callback<ApiResponse<List<TransactionItem>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<TransactionItem>>> call, Response<ApiResponse<List<TransactionItem>>> response) {
                 swipeRefresh.setRefreshing(false);

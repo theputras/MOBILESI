@@ -2,6 +2,9 @@ package com.theputras.posrentalps.fragment;
 
 import android.Manifest;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +27,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.theputras.posrentalps.LoginActivity;
 import com.theputras.posrentalps.R;
+import com.theputras.posrentalps.api.ApiClient;
+import com.theputras.posrentalps.api.ApiService;
 import com.theputras.posrentalps.databinding.FragmentAccountBinding;
 import com.theputras.posrentalps.utils.BluetoothUtil;
 
@@ -32,10 +38,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class AccountFragment extends Fragment {
 
     private FragmentAccountBinding binding;
     private BluetoothUtil bluetoothUtil;
+
+    private SharedPreferences sharedPreferences;
+    private ApiService apiService;
 
     // Launcher Izin Bluetooth
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -53,15 +67,60 @@ public class AccountFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         bluetoothUtil = BluetoothUtil.getInstance(getContext());
-
+        apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
+        sharedPreferences = requireContext().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         updatePrinterStatusUI();
         updatePaperStatusUI();
 
         binding.btnPrinterSetting.setOnClickListener(v -> checkPermissionAndShowDialog());
         binding.btnPaperSetting.setOnClickListener(v -> showPaperSizeDialog());
+        binding.btnLogout.setOnClickListener(v -> logoutProcess());
         return binding.getRoot();
+    }
+
+    private void logoutProcess() {
+        // Ubah teks tombol biar user tau sedang loading
+        binding.btnLogout.setEnabled(false);
+        Toast.makeText(getContext(), "Sedang keluar...", Toast.LENGTH_SHORT).show();
+
+        // Panggil API Logout
+        apiService.logout().enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                // Mau sukses (200) atau gagal (401/500) di server,
+                // kita tetap harus hapus sesi di HP agar user bisa login ulang.
+                doLocalLogout();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // Jika koneksi internet mati, paksa logout lokal saja
+                Toast.makeText(getContext(), "Gagal terhubung server, memaksa keluar...", Toast.LENGTH_SHORT).show();
+                doLocalLogout();
+            }
+        });
+    }
+
+    private void doLocalLogout() {
+        if (getContext() == null) return;
+
+        // 1. Hapus Semua Data di SharedPreferences (Token & Nama)
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+
+        // 2. Pindah ke LoginActivity
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        // Flag ini PENTING: Untuk menghapus history activity sebelumnya (MainActivity)
+        // Jadi kalau user tekan BACK, aplikasi langsung keluar, bukan balik ke menu utama.
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        // 3. Tutup Fragment/Activity saat ini
+        requireActivity().finish();
     }
     private void updatePaperStatusUI() {
         int width = bluetoothUtil.getPrinterWidth();

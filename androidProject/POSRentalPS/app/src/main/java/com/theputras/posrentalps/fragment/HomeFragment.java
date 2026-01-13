@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
         layoutEmpty = view.findViewById(R.id.layoutEmptyHome);
         setupRecyclerView();
         setupSearch();

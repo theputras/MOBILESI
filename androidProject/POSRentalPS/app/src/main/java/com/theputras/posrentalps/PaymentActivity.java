@@ -40,7 +40,7 @@ public class PaymentActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Pastikan ApiClient logging aktif jika masih error
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getClient(this).create(ApiService.class);
 
         setupUI();
     }

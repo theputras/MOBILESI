@@ -48,7 +48,7 @@ public class StrukActivity extends AppCompatActivity {
         binding.btnPrint.setOnClickListener(v -> printStruk());
 
 
-        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService = ApiClient.getClient(this).create(ApiService.class);
 
 
         transactionId = getIntent().getStringExtra("TRANSACTION_ID");
