@@ -25,7 +25,8 @@ class QrisHelper
      */
     
     // QRIS String statis (decode dari gambar asli THE PUTRAS)
-    private static $staticQrisBase = '00020101021126610014COM.GO-JEK.WWW01189360091433175824250210G3175824250303UKE51440014ID.CO.QRIS.WWW0215ID10254034793280303UKE5204581253033605802ID5922The Putras, Tambaksari6008SURABAYA61056013462070703A016304627B';
+    // Diambil dari .env untuk keamanan
+    private static $staticQrisBase = null;
 
     /**
      * Parse QRIS EMV string ke array TLV
@@ -109,6 +110,15 @@ class QrisHelper
      */
     public static function addAmount(int $amount): string
     {
+        // Lazy load from env if null
+        if (self::$staticQrisBase === null) {
+            self::$staticQrisBase = env('QRIS_STATIC_STRING', ''); 
+            if (empty(self::$staticQrisBase)) {
+                // Fallback or throw error, but for now empty string will fail gracefully later
+                throw new \Exception('QRIS_STATIC_STRING is missing in .env');
+            }
+        }
+        
         $qris = self::$staticQrisBase;
         
         // Parse QRIS

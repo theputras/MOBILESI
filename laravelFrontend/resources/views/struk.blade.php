@@ -75,7 +75,42 @@
         <hr class="struk-divider">
         
         {{-- Total --}}
+        {{-- Total --}}
         <div class="struk-info">
+            {{-- Calculate Subtotal from Items --}}
+            @php
+                $subtotal = 0;
+                if(is_array($items) || is_object($items)) {
+                    foreach($items as $item) {
+                        $d = is_array($item) ? $item : (array)$item;
+                        $price = $d['harga'] ?? $d['subtotal'] ?? $d['harga_satuan'] ?? 0;
+                        $subtotal += $price;
+                    }
+                }
+                
+                // Admin Fee logic
+                $adminFee = 0;
+                if (strtoupper($metodePembayaran) === 'QRIS') {
+                    // Cek jika ada field biaya_admin, jika tidak hitung selisih
+                    $adminFee = $transaksi->biaya_admin ?? ($total - $subtotal);
+                    // Pastikan tidak negatif (jika logic id berbeda)
+                    if ($adminFee < 0) $adminFee = 0;
+                }
+            @endphp
+
+            {{-- Subtotal (Only show if there is admin fee) --}}
+            @if($adminFee > 0)
+            <div class="row">
+                <div class="col-6">SUBTOTAL</div>
+                <div class="col-6 text-end">Rp {{ number_format($subtotal) }}</div>
+            </div>
+            <div class="row text-danger">
+                <div class="col-6">BIAYA LAYANAN</div>
+                <div class="col-6 text-end">Rp {{ number_format($adminFee) }}</div>
+            </div>
+            <hr style="margin: 4px 0; opacity: 0.5;">
+            @endif
+
             <div class="row struk-total">
                 <div class="col-6">TOTAL</div>
                 <div class="col-6 text-end">Rp {{ number_format($total) }}</div>

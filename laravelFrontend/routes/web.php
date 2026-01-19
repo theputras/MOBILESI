@@ -45,7 +45,7 @@ Route::middleware([CekTokenBackend::class])->group(function () {
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     
     // QRIS Dynamic Generation (AJAX)
-    Route::post('/generate-qris', [RentalFrontendController::class, 'generateQris'])->name('qris.generate');
+    // Route::post('/generate-qris', [RentalFrontendController::class, 'generateQris'])->name('qris.generate');
     
     // Legacy routes (backward compatibility)
     Route::post('/sewa', [RentalFrontendController::class, 'store'])->name('sewa.store');

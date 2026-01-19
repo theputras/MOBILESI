@@ -20,11 +20,22 @@ class RentalFrontendController extends Controller
         // Generate QRIS untuk checkout (SSR approach)
         $cart = session('cart', []);
         $total = collect($cart)->sum('harga');
+        
+        // Hitung Admin Fee 0.7% untuk QRIS
+        $adminFee = 0;
+        $totalQris = $total;
+        
+        if ($total > 0) {
+            $adminFee = ceil($total * 0.007);
+            $totalQris = $total + $adminFee;
+        }
+
         $qrisSvg = null;
         
         if ($total > 0) {
             try {
-                $qrisData = \App\Helpers\QrisHelper::generateDynamicQris($total);
+                // Generate QRIS dengan total yang sudah ditambah admin fee
+                $qrisData = \App\Helpers\QrisHelper::generateDynamicQris($totalQris);
                 $qrisSvg = $qrisData['qr_svg'];
             } catch (\Exception $e) {
                 // Fallback: use static QRIS
@@ -32,7 +43,7 @@ class RentalFrontendController extends Controller
             }
         }
 
-        return view('dashboard', compact('tvs', 'pakets', 'qrisSvg', 'total'));
+        return view('dashboard', compact('tvs', 'pakets', 'qrisSvg', 'total', 'adminFee', 'totalQris'));
     }
 
     /**
@@ -55,9 +66,9 @@ class RentalFrontendController extends Controller
         // Add to cart
         $cart[] = [
             'tv_id' => $request->tv_id,
-            'tv_name' => $request->tv_name,
+            'tv_name' => $request->tv_name, // e.g., "TV 01"
             'paket_id' => $request->paket_id,
-            'paket_name' => $request->paket_name,
+            'paket_name' => $request->paket_name, // e.g., "1 Jam"
             'harga' => $request->harga
         ];
         
@@ -65,8 +76,8 @@ class RentalFrontendController extends Controller
         
         return response()->json([
             'success' => true,
-            'message' => 'Item ditambahkan ke keranjang',
-            'cart_count' => count($cart)
+            'cart_count' => count($cart),
+            'message' => 'Berhasil ditambahkan ke keranjang'
         ]);
     }
 
@@ -96,7 +107,8 @@ class RentalFrontendController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'nama_penyewa' => 'required|string',
+            'nama_penyewa' => 'required|string|max:100',
+            'uang_bayar' => 'nullable|integer|min:0|required_if:metode_pembayaran,TUNAI',
             'metode_pembayaran' => 'required|in:TUNAI,QRIS',
         ]);
 
@@ -106,11 +118,19 @@ class RentalFrontendController extends Controller
             return back()->with('error', 'Keranjang kosong!');
         }
 
-        $total = collect($cart)->sum('harga');
-        $uangBayar = $request->metode_pembayaran === 'QRIS' ? $total : $request->uang_bayar;
+        $totalItem = collect($cart)->sum('harga');
+        
+        // Hitung ulang total bayar: Jika QRIS + 0.7% admin
+        $biayaAdmin = 0;
+        if ($request->metode_pembayaran === 'QRIS') {
+            $biayaAdmin = ceil($totalItem * 0.007);
+        }
+        
+        $totalTagihan = $totalItem + $biayaAdmin;
+        $uangBayar = $request->metode_pembayaran === 'QRIS' ? $totalTagihan : $request->uang_bayar;
 
         // Validate uang bayar for TUNAI
-        if ($request->metode_pembayaran === 'TUNAI' && $uangBayar < $total) {
+        if ($request->metode_pembayaran === 'TUNAI' && $uangBayar < $totalItem) {
             return back()->with('error', 'Uang bayar kurang dari total!');
         }
 
@@ -126,9 +146,14 @@ class RentalFrontendController extends Controller
         // Hit API transaksi
         $payload = [
             'nama_penyewa' => $request->nama_penyewa,
+            // Jika QRIS, nominal yang tercatat adalah total + admin fee
+            // Jika TUNAI, nominal adalah inputan user (bisa jadi kembalian nanti dihitung backend)
             'uang_bayar' => $uangBayar,
             'metode_pembayaran' => $request->metode_pembayaran,
-            'items' => $items
+            'items' => $items,
+            // Optional: Kirim info biaya admin jika backend mendukung (untuk rekap)
+                // 'biaya_admin' => $biayaAdmin,
+                // 'total_tagihan_bersih' => $totalItem
         ];
 
         $response = Transaksi::create($payload);
@@ -146,10 +171,10 @@ class RentalFrontendController extends Controller
                 'id' => $transaksiId,
                 'id_transaksi' => $transaksiId,
                 'nama_penyewa' => $request->nama_penyewa,
-                'total' => $total,
-                'total_tagihan' => $total,
+                'total' => $totalItem,
+                'total_tagihan' => $totalTagihan,
                 'uang_bayar' => $uangBayar,
-                'uang_kembalian' => $uangBayar - $total,
+                'uang_kembalian' => $uangBayar - $totalItem,
                 'metode_pembayaran' => $request->metode_pembayaran,
                 'items' => $cart,
                 'details' => $cart,
@@ -224,29 +249,29 @@ class RentalFrontendController extends Controller
     /**
      * Generate Dynamic QRIS with amount (AJAX)
      */
-    public function generateQris(Request $request)
-    {
-        $amount = (int) $request->input('amount', 0);
-        
-        if ($amount <= 0) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Amount harus lebih dari 0'
-            ], 400);
-        }
-
-        try {
-            $result = \App\Helpers\QrisHelper::generateDynamicQris($amount);
+        // public function generateQris(Request $request)
+        // {
+        //     $amount = (int) $request->input('amount', 0);
             
-            return response()->json([
-                'success' => true,
-                'data' => $result
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal generate QRIS: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+        //     if ($amount <= 0) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => 'Amount harus lebih dari 0'
+        //         ], 400);
+        //     }
+
+        //     try {
+        //         $result = \App\Helpers\QrisHelper::generateDynamicQris($amount);
+                
+        //         return response()->json([
+        //             'success' => true,
+        //             'data' => $result
+        //         ]);
+        //     } catch (\Exception $e) {
+        //         return response()->json([
+        //             'success' => false,
+        //             'message' => 'Gagal generate QRIS: ' . $e->getMessage()
+        //         ], 500);
+        //     }
+        // }
 }

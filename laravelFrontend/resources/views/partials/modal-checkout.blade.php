@@ -74,12 +74,26 @@
                     </div>
                     
                     {{-- QRIS Section (Hidden by default) - SSR Generated --}}
-                    @php $cartTotal = collect($cart)->sum('harga'); @endphp
+                    @php 
+                        $cartTotal = collect($cart)->sum('harga');
+                        // Ambil variabel dari controller, atau hitung fallback jika tidak ada
+                        $fee = $adminFee ?? ceil($cartTotal * 0.007);
+                        $finalTotalQris = $totalQris ?? ($cartTotal + $fee);
+                    @endphp
                     <div id="qrisContainer" style="display: none;">
                         <div class="text-center mb-3">
                             <div class="qris-amount-display">
-                                <small class="text-muted d-block mb-1">Total yang harus dibayar</small>
-                                <h2 class="text-success fw-bold mb-0">Rp {{ number_format($cartTotal) }}</h2>
+                                <div class="d-flex justify-content-between align-items-center mb-2 px-3">
+                                    <small class="text-muted">Total Belanja</small>
+                                    <small class="text-muted">Rp {{ number_format($cartTotal) }}</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2 px-3">
+                                    <small class="text-danger">Biaya Layanan QRIS (0.7%)</small>
+                                    <small class="text-danger">+ Rp {{ number_format($fee) }}</small>
+                                </div>
+                                <hr class="my-2 opacity-25">
+                                <small class="text-muted d-block mb-1">Total Bayar</small>
+                                <h2 class="text-success fw-bold mb-0">Rp {{ number_format($finalTotalQris) }}</h2>
                             </div>
                         </div>
                         
