@@ -241,7 +241,7 @@ laravelFrontend/
 
 ## 4. PENJELASAN DETAIL SETIAP FILE
 
-### 4.1 ROUTES ([routes/web.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelProject/routes/web.php))
+### 4.1 ROUTES (`routes/web.php`)
 
 ```php
 // PUBLIC ROUTES - Tidak perlu login
@@ -267,7 +267,7 @@ Route::middleware([CekTokenBackend::class])->group(function () {
 
 ---
 
-### 4.2 MIDDLEWARE ([CekTokenBackend.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Middleware/CekTokenBackend.php))
+### 4.2 MIDDLEWARE (`CekTokenBackend.php`)
 
 **Fungsi:** Mengecek apakah user sudah login dengan melihat session `api_token`.
 
@@ -291,17 +291,17 @@ public function handle(Request $request, Closure $next)
 
 ### 4.3 CONTROLLERS
 
-#### A. [FrontendAuthController.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/FrontendAuthController.php)
+#### A. `FrontendAuthController.php`
 
 **Fungsi:** Handle login, logout, register.
 
 | Method | Penjelasan |
 |--------|------------|
-| [showLoginForm()](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/FrontendAuthController.php#17-22) | Return view login.blade.php |
-| [login(Request $r)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/FrontendAuthController.php#23-52) | POST ke backend /api/login, simpan token ke session |
-| [logout()](file:///media/theputras/Data%20D/Github/MOBILESI/laravelProject/app/Http/Controllers/Api/LoginController.php#62-71) | Hapus semua session, redirect ke login |
-| [showRegisterForm()](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/FrontendAuthController.php#60-65) | Return view register.blade.php |
-| [register(Request $r)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelProject/app/Http/Controllers/Api/LoginController.php#12-34) | POST ke backend /api/register |
+| `showLoginForm()` | Return view login.blade.php |
+| `login(Request $r)` | POST ke backend /api/login, simpan token ke session |
+| `logout()` | Hapus semua session, redirect ke login |
+| `showRegisterForm()` | Return view register.blade.php |
+| `register(Request $r)` | POST ke backend /api/register |
 
 **Kode penting (login):**
 ```php
@@ -323,18 +323,18 @@ if ($response->successful()) {
 
 ---
 
-#### B. [RentalFrontendController.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/RentalFrontendController.php)
+#### B. `RentalFrontendController.php`
 
 **Fungsi:** Controller utama untuk fitur rental.
 
 | Method | Penjelasan |
 |--------|------------|
-| [index()](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/HistoryController.php#10-19) | Ambil TVs dan Pakets, tampilkan dashboard |
-| [addToCart(Request)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/RentalFrontendController.php#23-57) | Tambah item ke session cart (AJAX) |
-| [removeFromCart($i)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/RentalFrontendController.php#58-77) | Hapus item dari session cart (AJAX) |
-| [checkout(Request)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/RentalFrontendController.php#78-150) | Validasi, POST ke API transaksi, redirect struk |
-| [showStruk($id)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/RentalFrontendController.php#151-173) | Tampilkan bukti transaksi |
-| [stop($id)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Transaksi.php#121-134) | Reset status TV ke available |
+| `index()` | Ambil TVs dan Pakets, tampilkan dashboard |
+| `addToCart(Request)` | Tambah item ke session cart (AJAX) |
+| `removeFromCart($i)` | Hapus item dari session cart (AJAX) |
+| `checkout(Request)` | Validasi, POST ke API transaksi, redirect struk |
+| `showStruk($id)` | Tampilkan bukti transaksi |
+| `stop($id)` | Reset status TV ke available |
 
 **Kode penting (checkout):**
 ```php
@@ -357,7 +357,7 @@ if ($response->successful()) {
 
 ---
 
-#### C. [HistoryController.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/HistoryController.php)
+#### C. `HistoryController.php`
 
 **Fungsi:** Menampilkan riwayat transaksi.
 
@@ -377,7 +377,7 @@ public function show($id)
 
 ---
 
-#### D. [AccountController.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Http/Controllers/AccountController.php)
+#### D. `AccountController.php`
 
 **Fungsi:** Menampilkan halaman profil user.
 
@@ -394,7 +394,7 @@ public function index()
 
 Ini **BUKAN** model database biasa. Ini adalah class yang **fetch data dari API** dan berperilaku seperti Eloquent.
 
-#### A. [Tv.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Tv.php)
+#### A. `Tv.php`
 
 **Fungsi:** Mengambil data TV dari backend API.
 
@@ -426,7 +426,7 @@ public static function all(): Collection
 
 ---
 
-#### B. [PaketSewa.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/PaketSewa.php)
+#### B. `PaketSewa.php`
 
 **Fungsi:** Mengambil data paket sewa dari backend API.
 
@@ -450,16 +450,16 @@ public static function all(): Collection
 
 ---
 
-#### C. [Transaksi.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Transaksi.php)
+#### C. `Transaksi.php`
 
 **Fungsi:** CRUD transaksi via API.
 
 | Method | HTTP | Endpoint | Penjelasan |
 |--------|------|----------|------------|
-| [all()](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Tv.php#27-47) | GET | /api/transaksi | List semua transaksi |
-| [find($id)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Transaksi.php#84-107) | GET | /api/transaksi/{id} | Detail 1 transaksi |
-| [create($data)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Transaksi.php#108-120) | POST | /api/transaksi | Buat transaksi baru |
-| [stop($tvId)](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/app/Models/Transaksi.php#121-134) | PUT | /api/tvs/{id} | Reset status TV |
+| `all()` | GET | /api/transaksi | List semua transaksi |
+| `find($id)` | GET | /api/transaksi/{id} | Detail 1 transaksi |
+| `create($data)` | POST | /api/transaksi | Buat transaksi baru |
+| `stop($tvId)` | PUT | /api/tvs/{id} | Reset status TV |
 
 **Properties:**
 - `id_transaksi` / `id`
@@ -474,7 +474,7 @@ public static function all(): Collection
 
 ### 4.5 VIEWS (Blade Templates)
 
-#### A. [layouts/app.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/layouts/app.blade.php)
+#### A. `layouts/app.blade.php`
 
 **Fungsi:** Master layout yang dipakai semua halaman.
 
@@ -501,7 +501,7 @@ public static function all(): Collection
 
 ---
 
-#### B. [dashboard.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/dashboard.blade.php)
+#### B. `dashboard.blade.php`
 
 **Fungsi:** Halaman utama menampilkan grid TV.
 
@@ -540,7 +540,7 @@ public static function all(): Collection
 
 ---
 
-#### C. [partials/modal-paket.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/partials/modal-paket.blade.php)
+#### C. `partials/modal-paket.blade.php`
 
 **Fungsi:** Modal bottom sheet untuk pilih paket sewa.
 
@@ -584,7 +584,7 @@ function addToCart(paketId, paketName, harga) {
 
 ---
 
-#### D. [partials/modal-checkout.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/partials/modal-checkout.blade.php)
+#### D. `partials/modal-checkout.blade.php`
 
 **Fungsi:** Modal untuk checkout dan pembayaran.
 
@@ -611,7 +611,7 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-#### E. [struk.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/struk.blade.php)
+#### E. `struk.blade.php`
 
 **Fungsi:** Menampilkan bukti transaksi (receipt).
 
@@ -623,7 +623,7 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-#### F. [history.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/history.blade.php)
+#### F. `history.blade.php`
 
 **Fungsi:** Menampilkan daftar riwayat transaksi.
 
@@ -633,7 +633,7 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-#### G. [account.blade.php](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/resources/views/account.blade.php)
+#### G. `account.blade.php`
 
 **Fungsi:** Halaman profil user.
 
@@ -644,7 +644,7 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-### 4.6 CSS ([public/css/app.css](file:///media/theputras/Data%20D/Github/MOBILESI/laravelFrontend/public/css/app.css))
+### 4.6 CSS (`public/css/app.css`)
 
 **Fungsi:** Custom styling untuk seluruh aplikasi.
 
@@ -659,7 +659,113 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-## 5. SESSION MANAGEMENT
+---
+---
+
+## 5. DYNAMIC QRIS IMPLEMENTATION (FITUR BARU)
+
+Kode ini memungkinkan aplikasi untuk generate QRIS yang **otomatis berisi nominal pembayaran**, sehingga user tidak perlu input manual.
+
+### 5.1 Logic di `QrisHelper.php`
+
+**Lokasi:** `app/Helpers/QrisHelper.php`
+**Fungsi:** Memanipulasi string QRIS EMV (Europay Mastercard Visa) standard.
+
+#### A. Struktur QRIS
+QRIS itu sebenarnya hanya string panjang dengan format **TLV (Tag-Length-Value)**.
+Contoh: `000201010211`
+- Tag `00`: Format Indicator
+- Length `02`: Panjang value
+- Value `01`: Versi
+- Tag `01`: Initial Method
+- Length `02`: Panjang value
+- Value `11`: **Static** (kalau 12 = **Dynamic**)
+
+#### B. Proses Konversi (Method `addAmount`)
+
+```php
+public static function addAmount(int $amount): string
+{
+    // 1. Ambil QRIS Statis Base (dari file gambar asli owner)
+    $qris = self::$staticQrisBase;
+    
+    // 2. Parse string jadi Array (Key-Value)
+    $data = self::parseQris($qris);
+    
+    // 3. Ubah Tipe QR jadi DYNAMIC
+    // Field '01' nilainya diganti dari '11' jadi '12'
+    $data['01'] = '12';
+    
+    // 4. Tambahkan Nominal (Field '54')
+    // Field 54 = Transaction Amount
+    $data['54'] = (string)$amount;
+    
+    // 5. Susun Ulang String (Rebuild)
+    // Menggabungkan semua keys + hitung ulang CRC16 Checksum
+    return self::buildQris($data);
+}
+```
+
+#### C. Generate SVG (Tanpa GD Extension)
+
+Karena server kadang tidak punya extension `gd` atau `imagick`, kita pakai library `chillerlan/php-qrcode` untuk output **SVG (Scalable Vector Graphics)**. SVG itu teks XML, jadi sangat ringan dan pasti support di semua browser.
+
+```php
+public static function generateQrCode(string $qrisString): string
+{
+    // Output type: MARKUP_SVG
+    $options = new QROptions([
+        'outputType' => QRCode::OUTPUT_MARKUP_SVG,
+        // ...
+    ]);
+    
+    // Return string SVG
+    return (new QRCode($options))->render($qrisString);
+}
+```
+
+---
+
+### 5.2 Implementasi di Frontend (SSR Approach)
+
+Awalnya kita pakai AJAX, tapi itu bikin _flicker_ dan kadang error CORS atau loading lambat. Sekarang kita pakai **Server Side Rendering (SSR)** agar QR langsung muncul saat halaman dimuat.
+
+#### Controller (`RentalFrontendController@index`)
+
+```php
+// 1. Ambil total dari session cart
+$total = collect(session('cart'))->sum('harga');
+
+// 2. Generate QR Code saat itu juga
+$qrisSvg = null;
+if ($total > 0) {
+    $qrisData = \App\Helpers\QrisHelper::generateDynamicQris($total);
+    // Kita cuma butuh SVG string-nya
+    $qrisSvg = $qrisData['qr_svg'];
+}
+
+// 3. Lempar ke View
+return view('dashboard', compact(..., 'qrisSvg'));
+```
+
+#### View (`modal-checkout.blade.php`)
+
+Disini kita render SVG sebagai gambar menggunakan Data URI.
+
+```blade
+@if(isset($qrisSvg))
+    <!-- Render SVG Base64 -->
+    <img src="{{ $qrisSvg }}" alt="QRIS">
+    <!-- $qrisSvg isinya sudah: "data:image/svg+xml;base64,..." -->
+@else
+    <!-- Fallback ke QRIS Statis (tanpa nominal) -->
+    <img src="{{ asset('images/qris.png') }}">
+@endif
+```
+
+---
+
+## 6. SESSION MANAGEMENT
 
 | Key | Isi | Kapan Diset |
 |-----|-----|-------------|
@@ -671,7 +777,7 @@ document.querySelectorAll('input[name="metode_pembayaran"]').forEach(radio => {
 
 ---
 
-## 6. ENVIRONMENT VARIABLES ([.env](file:///media/theputras/Data%20D/Github/MOBILESI/laravelProject/.env))
+## 6. ENVIRONMENT VARIABLES (`.env`)
 
 ```env
 BACKEND_URL=http://mobile.theputras.my.id   # URL backend API

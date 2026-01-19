@@ -16,8 +16,23 @@ class RentalFrontendController extends Controller
     {
         $tvs = Tv::all(); 
         $pakets = PaketSewa::all()->sortBy('durasi_menit')->values(); // Sort by duration ascending
+        
+        // Generate QRIS untuk checkout (SSR approach)
+        $cart = session('cart', []);
+        $total = collect($cart)->sum('harga');
+        $qrisSvg = null;
+        
+        if ($total > 0) {
+            try {
+                $qrisData = \App\Helpers\QrisHelper::generateDynamicQris($total);
+                $qrisSvg = $qrisData['qr_svg'];
+            } catch (\Exception $e) {
+                // Fallback: use static QRIS
+                $qrisSvg = null;
+            }
+        }
 
-        return view('dashboard', compact('tvs', 'pakets'));
+        return view('dashboard', compact('tvs', 'pakets', 'qrisSvg', 'total'));
     }
 
     /**
@@ -204,5 +219,34 @@ class RentalFrontendController extends Controller
     {
         Transaksi::stop($id);
         return redirect()->back()->with('success', 'TV berhasil di-reset.');
+    }
+
+    /**
+     * Generate Dynamic QRIS with amount (AJAX)
+     */
+    public function generateQris(Request $request)
+    {
+        $amount = (int) $request->input('amount', 0);
+        
+        if ($amount <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Amount harus lebih dari 0'
+            ], 400);
+        }
+
+        try {
+            $result = \App\Helpers\QrisHelper::generateDynamicQris($amount);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $result
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal generate QRIS: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
