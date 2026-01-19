@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\FrontendAuthController;
+use App\Http\Controllers\RentalFrontendController;
+use App\Http\Middleware\CekTokenBackend;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+// Halaman Login
+Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [FrontendAuthController::class, 'login']);
+Route::get('/logout', [FrontendAuthController::class, 'logout'])->name('logout');
 
-Route::get('/', function () {
-    return view('welcome');
+// Halaman Dashboard (Diproteksi Middleware)
+Route::middleware([CekTokenBackend::class])->group(function () {
+    Route::get('/', [RentalFrontendController::class, 'index'])->name('dashboard');
+    Route::post('/sewa', [RentalFrontendController::class, 'store'])->name('sewa.store');
+    Route::post('/stop/{id}', [RentalFrontendController::class, 'stop'])->name('sewa.stop');
 });
