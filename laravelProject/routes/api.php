@@ -79,7 +79,7 @@ Route::post('/login', [LoginController::class, 'login']);
 | 2. PROTECTED ROUTES (Harus Login Dulu)
 |--------------------------------------------------------------------------
 */
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     
     // Route untuk "Read" semua item
 Route::get('/items', [ItemController::class, 'index']);
@@ -148,7 +148,7 @@ Route::delete('/konsumens/{id}', [KonsumenController::class, 'destroy']);
     Route::get('/tvs-available', [TvController::class, 'getAvailableTvs']);
     Route::get('/tvs-booked', [TvController::class, 'getBookedTvs']);
     Route::get('/tvs-maintenance', [TvController::class, 'getMaintenanceTvs']);
-// });
+});
 
 
 Route::get('produk/qb', [apiprodukscontroller::class, 'index_qb']);
