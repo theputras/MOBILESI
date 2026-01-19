@@ -1,0 +1,759 @@
+/* ============================================
+   RENTAL PS - Custom CSS (Bootstrap Override)
+   ============================================ */
+
+:root {
+    --primary-brand: #689F38;
+    --primary-dark: #558B2F;
+    --sage-light: #F1F3E0;
+    --sage-medium: #C5E1A5;
+    --text-primary: #212121;
+    --text-grey: #757575;
+    --text-light-grey: #9E9E9E;
+    --bg-light: #F5F5F5;
+    --white-smoke: #FAFAFA;
+    --status-available: #4CAF50;
+    --status-booked: #F44336;
+    --status-maintenance: #9E9E9E;
+}
+
+/* Body & Main Content */
+body {
+    background-color: var(--white-smoke);
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.main-content {
+    padding: 16px;
+    padding-bottom: 100px;
+}
+
+/* ============================================
+   BOTTOM NAVIGATION
+   ============================================ */
+.bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(241, 243, 224, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 32px;
+    padding: 8px 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    z-index: 1000;
+}
+
+.bottom-nav .nav-link {
+    color: var(--text-grey);
+    padding: 8px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+}
+
+.bottom-nav .nav-link i {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.bottom-nav .nav-link.active {
+    background: var(--primary-brand);
+    color: white;
+}
+
+.bottom-nav .nav-link:hover:not(.active) {
+    background: rgba(104, 159, 56, 0.1);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.page-header {
+    margin-bottom: 16px;
+}
+
+.page-header .greeting {
+    color: var(--text-grey);
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.page-header .title {
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.page-header .subtitle {
+    color: var(--text-light-grey);
+    font-size: 12px;
+}
+
+/* ============================================
+   SEARCH BAR
+   ============================================ */
+.search-box {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #E0E0E0;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    background: transparent;
+}
+
+.search-box input::placeholder {
+    color: var(--sage-medium);
+}
+
+/* ============================================
+   TV GRID CARDS
+   ============================================ */
+.tv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.tv-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.tv-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tv-card.selected {
+    border-color: var(--primary-brand);
+}
+
+.tv-card .tv-icon {
+    font-size: 48px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.tv-card .tv-number {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.tv-card .tv-console {
+    font-size: 12px;
+    color: var(--text-grey);
+    margin-bottom: 8px;
+}
+
+.tv-card .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background: #E8F5E9;
+    color: var(--status-available);
+}
+
+.status-booked {
+    background: #FFEBEE;
+    color: var(--status-booked);
+}
+
+.status-maintenance {
+    background: #F5F5F5;
+    color: var(--status-maintenance);
+}
+
+/* TV Card - In Cart Status */
+.status-in-cart {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.tv-card.in-cart {
+    border-color: #1976D2;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.tv-card.in-cart:hover {
+    transform: none;
+}
+
+.cart-indicator {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    background: #1976D2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.4);
+}
+
+/* ============================================
+   FAB CART BUTTON
+   ============================================ */
+.fab-cart {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-brand);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 16px rgba(104, 159, 56, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+.fab-cart:hover {
+    background: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.fab-cart .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #F44336;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================================
+   BOTTOM SHEET MODAL
+   ============================================ */
+.modal.bottom-sheet .modal-dialog {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    max-width: 100%;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+}
+
+.modal.bottom-sheet.show .modal-dialog {
+    transform: translateY(0);
+}
+
+.modal.bottom-sheet .modal-content {
+    border-radius: 24px 24px 0 0;
+    border: none;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal.bottom-sheet .modal-header {
+    border-bottom: none;
+    padding: 20px 24px 10px;
+    position: relative;
+}
+
+.modal.bottom-sheet .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #E0E0E0;
+    border-radius: 2px;
+}
+
+.modal.bottom-sheet .modal-title {
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.modal.bottom-sheet .modal-body {
+    padding: 16px 24px 32px;
+}
+
+/* ============================================
+   PAKET CARDS
+   ============================================ */
+.paket-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.paket-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E0E0E0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.paket-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.paket-card.selected {
+    border-color: var(--primary-brand);
+    box-shadow: 0 0 0 2px var(--primary-brand);
+}
+
+.paket-card .paket-header {
+    background: var(--bg-light);
+    padding: 12px;
+    text-align: center;
+}
+
+.paket-card .paket-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-brand);
+}
+
+.paket-card .paket-body {
+    padding: 16px;
+    text-align: center;
+}
+
+.paket-card .paket-label {
+    font-size: 12px;
+    color: var(--text-grey);
+}
+
+.paket-card .paket-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   CART ITEMS
+   ============================================ */
+.cart-item {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+}
+
+.cart-item .item-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.cart-item .item-info {
+    flex: 1;
+}
+
+.cart-item .item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cart-item .item-price {
+    font-size: 14px;
+    color: var(--status-available);
+    font-weight: 700;
+}
+
+.cart-item .btn-remove {
+    color: #F44336;
+    background: none;
+    border: none;
+    padding: 8px;
+}
+
+/* ============================================
+   PAYMENT FORM
+   ============================================ */
+.payment-method {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.payment-method .form-check {
+    flex: 1;
+    margin: 0;
+}
+
+.payment-method .form-check-input:checked + .form-check-label {
+    border-color: var(--primary-brand);
+    background: rgba(104, 159, 56, 0.1);
+}
+
+.payment-method .form-check-label {
+    display: block;
+    padding: 12px;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.total-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-top: 1px solid #E0E0E0;
+    margin-top: 16px;
+}
+
+.total-section .total-label {
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.total-section .total-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--status-available);
+}
+
+/* ============================================
+   STRUK / RECEIPT
+   ============================================ */
+.struk-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.struk-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    font-family: 'Courier New', monospace;
+}
+
+.struk-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.struk-logo {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.struk-store-name {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.struk-address {
+    font-size: 12px;
+    color: var(--text-grey);
+}
+
+.struk-divider {
+    border: none;
+    border-top: 2px dashed #E0E0E0;
+    margin: 16px 0;
+}
+
+.struk-info {
+    font-size: 12px;
+}
+
+.struk-info .row {
+    margin-bottom: 4px;
+}
+
+.struk-items {
+    padding: 8px 0;
+}
+
+.struk-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.struk-total {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.struk-footer {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+/* ============================================
+   HISTORY LIST
+   ============================================ */
+.history-item {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.history-item .history-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--sage-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: var(--primary-brand);
+    font-size: 20px;
+}
+
+.history-item .history-info {
+    flex: 1;
+}
+
+.history-item .history-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.history-item .history-date {
+    font-size: 12px;
+    color: var(--text-grey);
+}
+
+.history-item .history-amount {
+    font-weight: 700;
+    color: var(--status-available);
+}
+
+/* ============================================
+   ACCOUNT PAGE
+   ============================================ */
+.account-header {
+    background: linear-gradient(135deg, var(--primary-brand), var(--primary-dark));
+    color: white;
+    padding: 32px;
+    text-align: center;
+    margin: -16px -16px 0;
+    border-radius: 0 0 24px 24px;
+}
+
+.account-avatar {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 32px;
+    color: var(--primary-brand);
+}
+
+.account-name {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.account-role {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.account-menu {
+    background: white;
+    border-radius: 16px;
+    margin-top: -20px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.account-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #F5F5F5;
+    cursor: pointer;
+}
+
+.account-menu-item:last-child {
+    border-bottom: none;
+}
+
+.account-menu-item i {
+    width: 24px;
+    color: #555;
+    margin-right: 16px;
+}
+
+.account-menu-item span {
+    flex: 1;
+    font-size: 16px;
+}
+
+.account-menu-item .menu-value {
+    font-size: 12px;
+    color: var(--text-grey);
+}
+
+.account-menu-item.danger {
+    color: #F44336;
+}
+
+.account-menu-item.danger i {
+    color: #F44336;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-primary {
+    background: var(--primary-brand);
+    border-color: var(--primary-brand);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-pay {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 8px;
+}
+
+/* ============================================
+   ALERTS / TOAST
+   ============================================ */
+.alert-float {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    min-width: 300px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-grey);
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #E0E0E0;
+    margin-bottom: 16px;
+}
+
+.empty-state h5 {
+    color: var(--text-grey);
+    font-weight: 600;
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--text-light-grey);
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+    body {
+        background: white !important;
+        padding: 0 !important;
+    }
+    
+    .bottom-nav,
+    .fab-cart,
+    .btn-print,
+    .btn-back,
+    .no-print {
+        display: none !important;
+    }
+    
+    .main-content {
+        padding: 0 !important;
+    }
+    
+    .struk-card {
+        box-shadow: none !important;
+        border: 1px solid #000;
+    }
+}
