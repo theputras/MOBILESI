@@ -53,11 +53,7 @@ return $request->user () ;
 
 
 
-// Route untuk "Registrasi"
-Route::post('/register', [LoginController::class, 'register']);
 
-// Route untuk "Login"
-Route::post('/login', [LoginController::class, 'login']);
 
 
 
