@@ -11,6 +11,7 @@ class PaketSewa
     public $id_console;
     public $nama_paket;
     public $harga;
+    public $durasi_menit; // Added field
     public $nama_console;
 
     public function __construct($data = [])
@@ -19,6 +20,7 @@ class PaketSewa
         $this->id_console = $data['id_console'] ?? null;
         $this->nama_paket = $data['nama_paket'] ?? '-';
         $this->harga = $data['harga'] ?? 0;
+        $this->durasi_menit = $data['durasi_menit'] ?? 0; // Added assignment
         $this->nama_console = $data['nama_console'] ?? '-';
     }
 

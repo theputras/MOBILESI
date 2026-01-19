@@ -87,10 +87,18 @@
                 {{ $statusText }}
             </span>
             
-            @if($tv->status === 'booked' && $tv->rental_end_time)
-                <div class="mt-2 small text-muted">
-                    <i class="bi bi-clock"></i> 
-                    Selesai: {{ \Carbon\Carbon::parse($tv->rental_end_time)->setTimezone('Asia/Jakarta')->format('H:i') }}
+            @if($tv->status === 'booked')
+                <div class="mt-2">
+                    <div class="small text-muted mb-2">
+                        <i class="bi bi-clock"></i> 
+                        Selesai: {{ \Carbon\Carbon::parse($tv->rental_end_time)->setTimezone('Asia/Jakarta')->format('H:i') }}
+                    </div>
+                    <form action="{{ route('sewa.stop', $tv->id) }}" method="POST" onsubmit="return confirm('Stop rental TV {{ $tv->nomor_tv }}?')">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100" style="font-size: 12px; padding: 4px 8px;">
+                            <i class="bi bi-stop-circle me-1"></i> STOP / RESET
+                        </button>
+                    </form>
                 </div>
             @endif
         </div>

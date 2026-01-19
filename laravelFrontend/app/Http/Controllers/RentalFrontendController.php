@@ -15,7 +15,7 @@ class RentalFrontendController extends Controller
     public function index()
     {
         $tvs = Tv::all(); 
-        $pakets = PaketSewa::all();
+        $pakets = PaketSewa::all()->sortBy('durasi_menit')->values(); // Sort by duration ascending
 
         return view('dashboard', compact('tvs', 'pakets'));
     }
