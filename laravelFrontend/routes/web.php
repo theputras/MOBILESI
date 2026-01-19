@@ -10,6 +10,10 @@ Route::get('/login', [FrontendAuthController::class, 'showLoginForm'])->name('lo
 Route::post('/login', [FrontendAuthController::class, 'login']);
 Route::get('/logout', [FrontendAuthController::class, 'logout'])->name('logout');
 
+// Halaman Register
+Route::get('/register', [FrontendAuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [FrontendAuthController::class, 'register']);
+
 // Halaman Dashboard (Diproteksi Middleware)
 Route::middleware([CekTokenBackend::class])->group(function () {
     Route::get('/', [RentalFrontendController::class, 'index'])->name('dashboard');

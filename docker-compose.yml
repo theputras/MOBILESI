@@ -8,12 +8,17 @@ services:
     container_name: laravelproject-app
     ports:
       - "60600:60600"
+    environment:
+      - TZ=Asia/Jakarta
     volumes:
-      - ./:/var/www
+      - /opt/MOBILESI/laravelProject:/var/www
+      - /etc/localtime:/etc/localtime:ro  # <--- 2. Sync file waktu dari Host
+      - /etc/timezone:/etc/timezone:ro  # <--- 3. Sync settingan timezone dari Host
     env_file:
       - .env
     networks:
       - default
+      - nextcloud-net
 
 # HAPUS BAGIAN 'command:' KARENA SUDAH ADA DI DOCKERFILE
 
@@ -21,3 +26,5 @@ networks:
   default:
     name: laravelproject_default
     driver: bridge
+  nextcloud-net:
+    external: true
